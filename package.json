@@ -1,0 +1,44 @@
+{
+  "name": "maia-gui",
+  "version": "0.0.1",
+  "description": "Classes for building MAIA GUIs supporting various applications by Music Artificial Intelligence Algorithms, Inc.",
+  "main": "dist/index.js",
+  "jsnext:main": "es6/index.js",
+  "module": "es6/index.js",
+  "scripts": {
+    "test": "make test",
+    "compile": "npm run c:babel && npm run c:rollup",
+    "watch": "npm run w:babel && npm run w:rollup",
+    "c:babel": "babel ./es6 --out-dir ./dist --presets=es2015",
+    "w:babel": "babel  ./es6 -w --out-dir ./dist --presets=es2015",
+    "c:rollup": "rollup -c",
+    "w:rollup": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:tomthecollins/maia-gui.git"
+  },
+  "keywords": [
+    "intelligence",
+    "artificial",
+    "music",
+    "gui"
+  ],
+  "author": "Tom Collins <contact@musicintelligence.co> (https://musicintelligence.co/)",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://groups.google.com/d/forum/maia-inc-dev"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5"
+  },
+  "dependencies": {
+    "browserify": "^16.2.3",
+    "rollup-plugin-commonjs": "^10.0.0",
+    "watchify": "^3.11.1",
+    "maia-util": "^0.2.30"
+  }
+}
