@@ -1,9 +1,17 @@
-export default class Help {
-  constructor(theSketch, theMode){
+/**
+ * Class that represents a help functionality for a sketch.
+ */
+class Help {
+  /**
+   * Creates an instance of Help.
+   * @param {object} _sketch - The sketch to be used with this help functionality.
+   * @param {boolean} _mode - The current mode of this help functionality.
+   */
+  constructor(_sketch, _mode){
     // Workaround for JS context peculiarities.
     // const self = this
-    this.sk = theSketch
-    this.mode = theMode
+    this.sk = _sketch
+    this.mode = _mode
     this.idCurr = "Help home"
     this.displayInfo = [
       {
@@ -58,6 +66,9 @@ export default class Help {
     // return sth;
   }
 
+  /**
+   * Draws the help content.
+   */
   draw(){
     const self = this
     this.sk.noStroke()
@@ -122,6 +133,12 @@ export default class Help {
 
   }
 
+  /**
+   * Draws the close button in the top-right corner.
+   * @param {number} r - The red value of the color of the close button.
+   * @param {number} g - The green value of the color of the close button.
+   * @param {number} b - The blue value of the color of the close button.
+   */
   draw_close_button(r, g, b){
     //  Close button in top-right corner
     if (g == undefined && b == undefined){
@@ -235,3 +252,4 @@ export default class Help {
   }
 
 }
+export default Help

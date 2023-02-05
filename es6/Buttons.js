@@ -1,5 +1,16 @@
-export default class Buttons {
-  constructor(_sketch, _buttonsStruct, _containerDimensions){
+/**
+ * Class representing the Buttons.
+ * @class
+ */
+class Buttons {
+  /**
+   * Creates an instance of Buttons.
+   * @constructor
+   * @param {p5} _sketch - The p5 instance.
+   * @param {Object} _buttonsStruct - The buttons structure object.
+   * @param {Object} _containerDimensions - The container dimensions object.
+   */
+   constructor(_sketch, _buttonsStruct, _containerDimensions){
     this.sk = _sketch
     this.buttonsStruct = _buttonsStruct
     this.keys = Object.keys(this.buttonsStruct)
@@ -9,6 +20,9 @@ export default class Buttons {
     this.h = _containerDimensions.height
   }
 
+  /**
+   * Draws the buttons on the sketch.
+   */
   draw(){
     const self = this
     self.keys.forEach(function(k, idx){
@@ -16,6 +30,14 @@ export default class Buttons {
     })
   }
 
+  /**
+   * Helper function for touch_check() method in Buttons class.
+   * Determines if a button has been clicked and which one it is.
+   *
+   * @return {object} Object with "click" and "index" properties indicating if
+   * a button has been clicked and which button was clicked, respectively.
+   * "click" is a boolean and "index" is an integer.
+   */
   touch_check_helper(){
     let self = this
     // Check general area.
@@ -42,3 +64,4 @@ export default class Buttons {
   }
 
 }
+export default Buttons

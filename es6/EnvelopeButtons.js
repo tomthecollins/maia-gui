@@ -1,4 +1,14 @@
-export default class EnvelopeButtons extends Buttons {
+/**
+ * Class for creating and managing buttons for a visual envelope editor
+ * @extends Buttons
+ */
+class EnvelopeButtons extends Buttons {
+  /**
+   * Create a new instance of EnvelopeButtons
+   * @param {p5} _sketch - A p5.js sketch instance
+   * @param {Object} _buttonsStruct - An object representing the buttons to be created
+   * @param {Object} _containerDimensions - An object with width and height properties that represent the dimensions of the button container
+   */
   constructor(_sketch, _buttonsStruct, _containerDimensions){
     super(_sketch, _buttonsStruct, _containerDimensions)
     // Any extra properties/actions here, which could have been
@@ -7,6 +17,11 @@ export default class EnvelopeButtons extends Buttons {
 
   }
 
+  /**
+   * Check if a button has been touched
+   *
+   * @param {Object} envEd - An object representing the visual envelope editor
+   */
   touch_check(envEd){
     const self = this
     const helperResult = self.touch_check_helper()
@@ -39,3 +54,4 @@ export default class EnvelopeButtons extends Buttons {
   }
 
 }
+export default EnvelopeButtons

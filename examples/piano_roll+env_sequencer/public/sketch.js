@@ -1,236 +1,243 @@
-const sketchy = function(p){
-  // Define the sketch's parameters in an object for ease of collapse.
-  let prm = {
-    "printConsoleLogs": false,
-    "path": {
-      "img": "./src/img/",
-      "instr": "./src/instrument/"
-    },
-    "canvas": {
-      "width": window.innerWidth,
-      "height": 1200
-    },
-    // Autoplay and double-touch bug
-    "lastTimeTouchStarted": Tone.now(),
-    "audioContextBegun": false,
-    "isFirefox": false,
-    "isMobile": false,
-    // Stuff relating to instruments
-    "instr": {
-      "keys": ["sawtooth_synth", "electric_bass_finger", "edm_drum_kit"],
-      "staffNo": 0,
-      "selectedInstr": null,
-      "iicons": [],
-      "iiconsName": []
-    },
-    // "instrKeys": ,
-    // let , selectedInstr, iicons
+class Client {
+  constructor(){
+    this.sketch = new p5(this.load_sketch.bind(this), "mySequencer")
+  }
 
-    // Help/legibility overlay
-    "helpMode": null,
-    "help": null,
-    // Granularity
-    "gran": {
-      "options": ["1", "1/2", "1/3", "1/4"],
-      "value": null,
-      "index": null,
-      "img": [],
-      "imgName": [
-        "granularity_1.png",
-        "granularity_1_2.png",
-        "granularity_1_3.png",
-        "granularity_1_4.png"
-      ],
-      "buttons": null
-    },
-    // Main melody editor
-    "melEd": {
-      "x": null,
-      "y": null,
-      "width": null,
-      "height": null
-    },
-    // Edit buttons (pencil, cursor, rubber)
-    "edBtn": {
-      "x": null,
-      "y": null,
-      "width": null,
-      "height": null,
-      "img": [],
-      "imgName": [
-        "pencil_256_0_ecf0f1_none.png",
-        "mouse-pointer_256_0_ecf0f1_none.png",
-        "eraser_256_0_ecf0f1_none.png"
-      ],
-      "buttons": null
-    },
-    "range": [48, 86],
-    // Grids
-    "grid": {
-      "inner": {
-        "oblongImgName": ["obBgn.png", "obMid.png", "obEnd.png"],
-        "oblongImg": [],
-        "backImgName": ["midi_drop_msg.png", "logo_maia.png"],
-        "backImg": []
+
+  load_sketch(p){
+    // Define the sketch's parameters in an object for ease of collapse.
+    const prm = {
+      "printConsoleLogs": false,
+      "path": {
+        "img": "./src/img/",
+        "instr": "./src/instrument/"
       },
-      "param": {
-        "pcs": [0, 1, 2, 3, 5, 7, 8, 9, 10, 11]
-      }
-    },
-    // Navigation buttons
-    "navign": {
-      "x": null,
-      "y": null,
-      "width": null,
-      "height": null,
-      "buttons": null,
-      "img": [],
-      "imgName": [
-        "arrow-up_256_0_ecf0f1_none.png",
-        "arrow-down_256_0_ecf0f1_none.png",
-        "arrow-left_256_0_ecf0f1_none.png",
-        "arrow-right_256_0_ecf0f1_none.png"
-      ],
+      "canvas": {
+        "width": window.innerWidth,
+        "height": 1200
+      },
+      // Autoplay and double-touch bug
+      "lastTimeTouchStarted": Tone.now(),
+      "audioContextBegun": false,
+      "isFirefox": false,
+      "isMobile": false,
+      // Stuff relating to instruments
+      "instr": {
+        "keys": ["sawtooth_synth", "electric_bass_finger", "edm_drum_kit"],
+        "staffNo": 0,
+        "selectedInstr": null,
+        "iicons": [],
+        "iiconsName": []
+      },
+      // "instrKeys": ,
+      // let , selectedInstr, iicons
 
-    },
-    // Transport bar
-    "trans": {
-      "x": null,
-      "y": null,
-      "width": null,
-      "height": null,
-      "img": [],
-      "imgName": [
-        "question_mark.png",
-        ["play_256_0_ecf0f1_none.png", "pause_256_0_ecf0f1_none.png"],
-        ["noun_ben_davis_piano.png", "noun_eucalyp_bass.png", "noun_hafiudin_drums.png"]
-      ],
-      "buttons": null
-    },
-    // Envelope editor
-    "envEd": {
-      "x": null,
-      "y": null,
-      "width": null,
-      "height": null,
-      "inner": {
+      // Help/legibility overlay
+      "helpMode": null,
+      "help": null,
+      // Granularity
+      "gran": {
+        "options": ["1", "1/2", "1/3", "1/4"],
+        "value": null,
+        "index": null,
+        "img": [],
+        "imgName": [
+          "granularity_1.png",
+          "granularity_1_2.png",
+          "granularity_1_3.png",
+          "granularity_1_4.png"
+        ],
+        "buttons": null
+      },
+      // Main melody editor
+      "melEd": {
         "x": null,
         "y": null,
         "width": null,
-        "height": null,
-        "nodeDiameter": null
+        "height": null
       },
-      "buttons": {
+      // Edit buttons (pencil, cursor, rubber)
+      "edBtn": {
         "x": null,
         "y": null,
         "width": null,
         "height": null,
         "img": [],
         "imgName": [
-          "env_temp_3401691.png",
-          "env_volume_1724091.png",
-          "env_echo_2010331.png",
-          "env_circuit_1685926.png"
+          "pencil_256_0_ecf0f1_none.png",
+          "mouse-pointer_256_0_ecf0f1_none.png",
+          "eraser_256_0_ecf0f1_none.png"
         ],
         "buttons": null
       },
-      "mode": null,
-      "prevMode": null,
-      "envelope": null
-    },
+      "range": [48, 86],
+      // Grids
+      "grid": {
+        "inner": {
+          "oblongImgName": ["obBgn.png", "obMid.png", "obEnd.png"],
+          "oblongImg": [],
+          "backImgName": ["midi_drop_msg.png", "logo_maia.png"],
+          "backImg": []
+        },
+        "param": {
+          "pcs": [0, 1, 2, 3, 5, 7, 8, 9, 10, 11]
+        }
+      },
+      // Navigation buttons
+      "navign": {
+        "x": null,
+        "y": null,
+        "width": null,
+        "height": null,
+        "buttons": null,
+        "img": [],
+        "imgName": [
+          "arrow-up_256_0_ecf0f1_none.png",
+          "arrow-down_256_0_ecf0f1_none.png",
+          "arrow-left_256_0_ecf0f1_none.png",
+          "arrow-right_256_0_ecf0f1_none.png"
+        ],
+
+      },
+      // Transport bar
+      "trans": {
+        "x": null,
+        "y": null,
+        "width": null,
+        "height": null,
+        "img": [],
+        "imgName": [
+          "question_mark.png",
+          ["play_256_0_ecf0f1_none.png", "pause_256_0_ecf0f1_none.png"],
+          ["noun_ben_davis_piano.png", "noun_eucalyp_bass.png", "noun_hafiudin_drums.png"]
+        ],
+        "buttons": null
+      },
+      // Envelope editor
+      "envEd": {
+        "x": null,
+        "y": null,
+        "width": null,
+        "height": null,
+        "inner": {
+          "x": null,
+          "y": null,
+          "width": null,
+          "height": null,
+          "nodeDiameter": null
+        },
+        "buttons": {
+          "x": null,
+          "y": null,
+          "width": null,
+          "height": null,
+          "img": [],
+          "imgName": [
+            "env_temp_3401691.png",
+            "env_volume_1724091.png",
+            "env_echo_2010331.png",
+            "env_circuit_1685926.png"
+          ],
+          "buttons": null
+        },
+        "mode": null,
+        "prevMode": null,
+        "envelope": null
+      },
 
 
-  }
-  let interface
-  // Instrument stuff
-  let pianoImg, bassImg, drumsImg
-
-
-  p.preload = function(){
-    prm.grid.inner.oblongImgName.forEach(function(nam, idx){
-      prm.grid.inner.oblongImg[idx] = p.loadImage(prm.path.img + nam)
-    })
-    prm.grid.inner.backImgName.forEach(function(nam, idx){
-      prm.grid.inner.backImg[idx] = p.loadImage(prm.path.img + nam)
-    })
-    prm.edBtn.imgName.forEach(function(nam, idx){
-      prm.edBtn.img[idx] = p.loadImage(prm.path.img + nam)
-    })
-    prm.navign.imgName.forEach(function(nam, idx){
-      prm.navign.img[idx] = p.loadImage(prm.path.img + nam)
-    })
-    prm.trans.imgName.forEach(function(nam, idx){
-      if (typeof nam === "string"){
-        prm.trans.img[idx] = p.loadImage(prm.path.img + nam)
-      }
-      else {
-        prm.trans.img[idx] = []
-        nam.forEach(function(aNam, jdx){
-          prm.trans.img[idx][jdx] = p.loadImage(prm.path.img + aNam)
-        })
-      }
-    })
-    // playImg = p.loadImage(prm.path.img + "play_256_0_ecf0f1_none.png")
-    // pauseImg = p.loadImage(prm.path.img + "pause_256_0_ecf0f1_none.png")
-    // helpImg = p.loadImage(prm.path.img + "question_mark.png")
-    prm.gran.imgName.forEach(function(nam, idx){
-      prm.gran.img[idx] = p.loadImage(prm.path.img + nam)
-    })
-    // Instrument
-    prm.trans.imgName[2].forEach(function(nam, idx){
-      prm.instr.iiconsName[idx] = nam
-      prm.instr.iicons[idx] = prm.trans.img[2][idx]
-    })
-    // Envelope
-    prm.envEd.buttons.imgName.forEach(function(nam, idx){
-      prm.envEd.buttons.img[idx] = p.loadImage(prm.path.img + nam)
-    })
-    // Logos
-    midiDropImg = p.loadImage(prm.path.img + "midi_drop_msg.png")
-    maiaImg = p.loadImage(prm.path.img + "logo_maia.png")
-  }
-
-
-  p.setup = function(){
-    interface = new Interface(p, prm)
-    const c = interface.get_canvas()
-    // c.drop(got_file)
-    interface.visual.draw()
-  }
-
-
-  p.draw = function(){
-    interface.visual.cursor_draw()
-  }
-
-
-  p.mousePressed = function(){
-    if (interface.isFirefox){
-      p.touchStarted()
     }
-  }
+    let interface
+    // Instrument stuff, potentially obsolete.
+    let pianoImg, bassImg, drumsImg
 
 
-  p.touchStarted = function(){
-    interface.touch_started()
-  }
+    p.preload = function(){
+      prm.grid.inner.oblongImgName.forEach(function(nam, idx){
+        prm.grid.inner.oblongImg[idx] = p.loadImage(prm.path.img + nam)
+      })
+      prm.grid.inner.backImgName.forEach(function(nam, idx){
+        prm.grid.inner.backImg[idx] = p.loadImage(prm.path.img + nam)
+      })
+      prm.edBtn.imgName.forEach(function(nam, idx){
+        prm.edBtn.img[idx] = p.loadImage(prm.path.img + nam)
+      })
+      prm.navign.imgName.forEach(function(nam, idx){
+        prm.navign.img[idx] = p.loadImage(prm.path.img + nam)
+      })
+      prm.trans.imgName.forEach(function(nam, idx){
+        if (typeof nam === "string"){
+          prm.trans.img[idx] = p.loadImage(prm.path.img + nam)
+        }
+        else {
+          prm.trans.img[idx] = []
+          nam.forEach(function(aNam, jdx){
+            prm.trans.img[idx][jdx] = p.loadImage(prm.path.img + aNam)
+          })
+        }
+      })
+      // playImg = p.loadImage(prm.path.img + "play_256_0_ecf0f1_none.png")
+      // pauseImg = p.loadImage(prm.path.img + "pause_256_0_ecf0f1_none.png")
+      // helpImg = p.loadImage(prm.path.img + "question_mark.png")
+      prm.gran.imgName.forEach(function(nam, idx){
+        prm.gran.img[idx] = p.loadImage(prm.path.img + nam)
+      })
+      // Instrument
+      prm.trans.imgName[2].forEach(function(nam, idx){
+        prm.instr.iiconsName[idx] = nam
+        prm.instr.iicons[idx] = prm.trans.img[2][idx]
+      })
+      // Envelope
+      prm.envEd.buttons.imgName.forEach(function(nam, idx){
+        prm.envEd.buttons.img[idx] = p.loadImage(prm.path.img + nam)
+      })
+      // Logos
+      midiDropImg = p.loadImage(prm.path.img + "midi_drop_msg.png")
+      maiaImg = p.loadImage(prm.path.img + "logo_maia.png")
+    }
 
 
-  p.touchMoved = function(){
-    interface.touch_moved()
-  }
+    p.setup = function(){
+      interface = new Interface(p, prm)
+      const c = interface.get_canvas()
+      // c.drop(got_file)
+      interface.visual.draw()
+    }
 
 
-  p.touchEnded = function(){
-    interface.touch_ended()
+    p.draw = function(){
+      interface.visual.cursor_draw()
+    }
+
+
+    p.mousePressed = function(){
+      if (interface.isFirefox){
+        p.touchStarted()
+      }
+    }
+
+
+    p.touchStarted = function(){
+      interface.touch_started()
+    }
+
+
+    p.touchMoved = function(){
+      interface.touch_moved()
+    }
+
+
+    p.touchEnded = function(){
+      interface.touch_ended()
+    }
   }
 }
 
 
 class Interface {
-  constructor(theSketch, param){
+  constructor(_sketch, param){
     const self = this
-    self.sk = theSketch
+    self.sk = _sketch
     self.isMobile = false
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ){
       self.isMobile = true
@@ -369,8 +376,8 @@ class Interface {
 
 
 class Visual {
-  constructor(theSketch, param){
-    this.sk = theSketch
+  constructor(_sketch, param){
+    this.sk = _sketch
     // Whole visual space
     this.canvas = {}
     this.canvas.width = (param.canvas && param.canvas.width) || window.innerWidth
@@ -633,7 +640,7 @@ class Visual {
 class Sonic {
   constructor(param){
     const self = this
-    // self.sk = theSketch
+    // self.sk = _sketch
     self.path = param.path
 
     Tone.Transport.loop = true
@@ -1061,4 +1068,4 @@ class Sonic {
 }
 
 
-new p5(sketchy, "mySequencer")
+new Client()

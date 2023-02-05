@@ -1,6 +1,16 @@
-export default class Grid {
-  constructor(theSketch, param, melEd){
-    this.sk = theSketch
+/**
+ * Class representing the grid in the melEd.
+ * @class
+ */
+class Grid {
+  /**
+   * Creates a Grid.
+   * @param {p5} _sketch - The p5.js sketch.
+   * @param {Object} param - Object containing parameters.
+   * @param {Object} melEd - The melEd object.
+   */
+  constructor(_sketch, param, melEd){
+    this.sk = _sketch
     // Handle grid and inner grid.
     this.x = param.grid.x || melEd.x
     this.y = param.grid.y || melEd.y + 1.25/10*melEd.height
@@ -104,7 +114,12 @@ export default class Grid {
 
   }
 
-
+  /**
+   * Creates an array of oblongs for the given component.
+   * @param {Object} c - The Composition object for which to create the array of
+   * oblongs.
+   * @returns {Array} oblongs - The array of oblongs for the given component.
+   */
   comp_obj2oblongs(c){
     const self = this
     // Dissociated granularity and zoom, so forcing this to 1 for now.
@@ -161,16 +176,22 @@ export default class Grid {
 
   }
 
-
-  cycle_logos(theVisual){
+  /**
+   * Cycles through logos in the inner object every 5 seconds.
+   * @param {Visual} _visual - The {@link Visual} class instance.
+   */
+  cycle_logos(_visual){
     const self = this
     setInterval(function(){
       self.inner.currBackImg = mu.choose_one(self.inner.backImg)
-      theVisual.draw()
+      _visual.draw()
     }, 5000)
   }
 
-
+  /**
+   * Draws the grid.
+   * @param {Boolean} recalculateDimensions - Whether to recalculate the dimensions.
+   */
   draw(recalculateDimensions){
     const self = this
     const gFloat = self.string_fraction2decimal(self.param.gran.value)
@@ -256,7 +277,12 @@ export default class Grid {
     })
   }
 
-
+  /**
+   * Gets MIDI note numbers within the given range, given the array of pitch classes.
+   * @param {Array} pitchClasses - The array of pitch classes.
+   * @param {Array} mnnRange - The range of MIDI note numbers.
+   * @returns {Array} allMnns - The array of MIDI note numbers.
+   */
   get_mnns(pitchClasses, mnnRange){
     // console.log("pitchClasses:", pitchClasses)
     // console.log("mnnRange:", mnnRange)
@@ -293,8 +319,12 @@ export default class Grid {
     return allMnns
   }
 
-
-  touch_check(touchType, theSound){
+  /**
+   * Checks for touch events.
+   * @param {String} touchType - The type of touch event.
+   * @param {Sonic} sonic - The {@link Sonic} class instance.
+   */
+  touch_check(touchType, _sonic){
     const self = this
     // Check if a select submenu is showing?
     switch (touchType){
@@ -355,7 +385,7 @@ export default class Grid {
         })
         // console.log("oblong:", oblong)
         if (oblong !== undefined){
-          oblong.widen(touchType, self, theSound)
+          oblong.widen(touchType, self, _sonic)
         }
       }
       break
@@ -365,7 +395,7 @@ export default class Grid {
         const oblong = self.inner.oblongs.find(function(o){ return o.beingDrawn })
         // console.log("oblong:", oblong)
         if (oblong !== undefined){
-          oblong.widen(touchType, self, theSound)
+          oblong.widen(touchType, self, _sonic)
           oblong.toggle_being_drawn()
         }
       }
@@ -396,7 +426,7 @@ export default class Grid {
           self.inner.oblongs.splice(relIdx, 1)
           // Redraw. Could be constrained to redrawing a single row...
           self.draw()
-          theSound.schedule_events(compObj, prodObj, self)
+          _sonic.schedule_events(compObj, prodObj, self)
         }
 
 
@@ -416,7 +446,7 @@ export default class Grid {
         if (relIdx >= 0){
           if (self.inner.selectedOblong.idNote == self.inner.oblongs[relIdx].idNote){
             // Clicked on the already-highlighted oblong. Change it's duration.
-            theSound.check_and_implement_edit(compObj, "shorten", self)
+            _sonic.check_and_implement_edit(compObj, "shorten", self)
           }
           else {
             // Change which oblong is highlighted.
@@ -437,7 +467,11 @@ export default class Grid {
 
   }
 
-
+  /**
+   * Converts a string fraction to a decimal.
+   * @param {String} str - The string fraction.
+   * @returns {Number} ans - The decimal representation of the string fraction.
+   */
   string_fraction2decimal(str){
     let ans
     if (str.indexOf("/") >= 0){
@@ -452,3 +486,4 @@ export default class Grid {
 
 
 }
+export default Grid

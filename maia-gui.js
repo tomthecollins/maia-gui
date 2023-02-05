@@ -1,21 +1,36 @@
 var mg = (function () {
   'use strict';
 
+  /**
+   * Class representing a button
+   * @class
+   */
   class Button {
-    constructor(
-      theSketch, theLabelImg, theDisabled, theClicked, theX, theY, theWidth, theHeight
+    /**
+     * Creates a button
+     * @param {p5} _sketch - The p5 sketch
+     * @param {p5.Image} _labelImg - The image for the button label
+     * @param {Boolean} _disabled - Flag for whether the button is disabled
+     * @param {Boolean} _clicked - Flag for whether the button is clicked
+     * @param {Number} _x - The x-coordinate for the button's position
+     * @param {Number} _y - The y-coordinate for the button's position
+     * @param {Number} _width - The width of the button
+     * @param {Number} _height - The height of the button
+     */
+     constructor(
+      _sketch, _labelImg, _disabled, _clicked, _x, _y, _width, _height
     ){
       // Workaround for JS context peculiarities.
       // var self = this;
-      this.sk = theSketch;
-      this.labelImg = theLabelImg;
+      this.sk = _sketch;
+      this.labelImg = _labelImg;
       // this.label = theLabel
-      this.disabled = theDisabled;
-      this.clicked = theClicked;
-      this.x = theX;
-      this.y = theY;
-      this.w = theWidth;
-      this.h = theHeight;
+      this.disabled = _disabled;
+      this.clicked = _clicked;
+      this.x = _x;
+      this.y = _y;
+      this.w = _width;
+      this.h = _height;
       this.buttonStroke = this.sk.color("#17baef");
       this.buttonFill = this.sk.color("#074f66");
       // this.labelFill = this.sk.color(225)
@@ -96,8 +111,19 @@ var mg = (function () {
 
   }
 
+  /**
+   * Class representing the Buttons.
+   * @class
+   */
   class Buttons {
-    constructor(_sketch, _buttonsStruct, _containerDimensions){
+    /**
+     * Creates an instance of Buttons.
+     * @constructor
+     * @param {p5} _sketch - The p5 instance.
+     * @param {Object} _buttonsStruct - The buttons structure object.
+     * @param {Object} _containerDimensions - The container dimensions object.
+     */
+     constructor(_sketch, _buttonsStruct, _containerDimensions){
       this.sk = _sketch;
       this.buttonsStruct = _buttonsStruct;
       this.keys = Object.keys(this.buttonsStruct);
@@ -107,6 +133,9 @@ var mg = (function () {
       this.h = _containerDimensions.height;
     }
 
+    /**
+     * Draws the buttons on the sketch.
+     */
     draw(){
       const self = this;
       self.keys.forEach(function(k, idx){
@@ -114,6 +143,14 @@ var mg = (function () {
       });
     }
 
+    /**
+     * Helper function for touch_check() method in Buttons class.
+     * Determines if a button has been clicked and which one it is.
+     *
+     * @return {object} Object with "click" and "index" properties indicating if
+     * a button has been clicked and which button was clicked, respectively.
+     * "click" is a boolean and "index" is an integer.
+     */
     touch_check_helper(){
       let self = this;
       // Check general area.
@@ -141,7 +178,18 @@ var mg = (function () {
 
   }
 
+  /**
+   * A class that extends the Buttons class and provides extra methods for touch checking in a grid editing context.
+   * @extends Buttons
+   */
+
   class EditButtons extends Buttons {
+    /**
+     * Creates a new instance of EditButtons.
+     * @param {p5} _sketch - A p5.js sketch instance.
+     * @param {Object} _buttonsStruct - An object containing button structure information.
+     * @param {Object} _containerDimensions - An object containing dimensions of the container holding the buttons.
+     */
     constructor(_sketch, _buttonsStruct, _containerDimensions){
       super(_sketch, _buttonsStruct, _containerDimensions);
       // Any extra properties/actions here, which could have been
@@ -150,6 +198,11 @@ var mg = (function () {
 
     }
 
+    /**
+     * Handles touch checking for EditButtons instances.
+     * @param {Grid} theGrid - An instance of the Grid class.
+     * @param {NavButtons} navignBtns - An instance of the NavButtons class.
+     */
     touch_check(theGrid, navignBtns){
       const self = this;
       const helperResult = self.touch_check_helper();
@@ -284,16 +337,29 @@ var mg = (function () {
 
   }
 
+  /**
+   * Class representing GranularityButtons.
+   * @extends Buttons
+   */
   class GranularityButtons extends Buttons {
-    constructor(_sketch, _buttonsStruct, _containerDimensions){
+    /**
+     * Create a GranularityButtons.
+     * @param {Object} _sketch - p5.js sketch object.
+     * @param {Object} _buttonsStruct - Object containing button properties.
+     * @param {Object} _containerDimensions - Object containing button container dimensions.
+     */
+    constructor(_sketch, _buttonsStruct, _containerDimensions) {
       super(_sketch, _buttonsStruct, _containerDimensions);
       // Any extra properties/actions here, which could have been
       // passed into the constructor also...
       // this.subject = subject
-
     }
 
-    touch_check(theGrid){
+    /**
+     * Check if the button is touched and update the granularity value.
+     * @param {Object} theGrid - Object containing grid properties.
+     */
+    touch_check(theGrid) {
       const self = this;
       const helperResult = self.touch_check_helper();
       if (!helperResult.click) { return }
@@ -322,7 +388,6 @@ var mg = (function () {
 
       }
     }
-
   }
 
   class NavigationButtons extends Buttons {
@@ -396,7 +461,17 @@ var mg = (function () {
 
   }
 
+  /**
+   * Class for creating and managing buttons for a visual envelope editor
+   * @extends Buttons
+   */
   class EnvelopeButtons extends Buttons {
+    /**
+     * Create a new instance of EnvelopeButtons
+     * @param {p5} _sketch - A p5.js sketch instance
+     * @param {Object} _buttonsStruct - An object representing the buttons to be created
+     * @param {Object} _containerDimensions - An object with width and height properties that represent the dimensions of the button container
+     */
     constructor(_sketch, _buttonsStruct, _containerDimensions){
       super(_sketch, _buttonsStruct, _containerDimensions);
       // Any extra properties/actions here, which could have been
@@ -405,6 +480,11 @@ var mg = (function () {
 
     }
 
+    /**
+     * Check if a button has been touched
+     *
+     * @param {Object} envEd - An object representing the visual envelope editor
+     */
     touch_check(envEd){
       const self = this;
       const helperResult = self.touch_check_helper();
@@ -450,22 +530,35 @@ var mg = (function () {
   */
 
   class Cell {
+    /**
+     * Creates a Cell.
+     * @param {Object} _sketch - The sketch object to be used.
+     * @param {Boolean} _checkTint - Handles the black or white of keyboard notes.
+     * @param {Number} _rowNo - The row number of the cell.
+     * @param {Number} _colNo - The column number of the cell.
+     * @param {Number} _nosRow - The number of rows in the grid.
+     * @param {Number} _nosCol - The number of columns in the grid.
+     * @param {Number} _gridX - The x coordinate of the grid.
+     * @param {Number} _gridY - The y coordinate of the grid.
+     * @param {Number} _gridWidth - The width of the grid.
+     * @param {Number} _gridHeight - The height of the grid.
+     */
     constructor(
-      theSketch, theCheckTint, theRowNo, theColNo, theNosRow, theNosCol,
-      theGridX, theGridY, theGridWidth, theGridHeight
+      _sketch, _checkTint, _rowNo, _colNo, _nosRow, _nosCol, _gridX, _gridY,
+      _gridWidth, _gridHeight
     ){
       // Workaround for JS context peculiarities.
       // var self = this;
-      this.sk = theSketch;
-      this.checkTint = theCheckTint; // Handles b/w of keyboard notes.
-      this.rowNo = theRowNo;
-      this.colNo = theColNo;
-      this.nosRow = theNosRow;
-      this.nosCol = theNosCol;
-      this.gridX = theGridX;
-      this.gridY = theGridY;
-      this.gridWidth = theGridWidth;
-      this.gridHeight = theGridHeight;
+      this.sk = _sketch;
+      this.checkTint = _checkTint; // Handles b/w of keyboard notes.
+      this.rowNo = _rowNo;
+      this.colNo = _colNo;
+      this.nosRow = _nosRow;
+      this.nosCol = _nosCol;
+      this.gridX = _gridX;
+      this.gridY = _gridY;
+      this.gridWidth = _gridWidth;
+      this.gridHeight = _gridHeight;
       this.x = this.gridX + this.colNo/this.nosCol*this.gridWidth;
       this.y = this.gridY + this.rowNo/this.nosRow*this.gridHeight;
       this.w = this.gridWidth/this.nosCol;
@@ -478,7 +571,13 @@ var mg = (function () {
       // return sth;
     }
 
-
+    /**
+     * Adds text to the cell.
+     * @param {String} type - The type of text to be added.
+     * @param {Number} startVal - The starting value of the text.
+     * @param {Number} sf - The scaling factor of the text.
+     * @param {Array} mnns - An array of musical note numbers.
+     */
     add_text(type, startVal, sf, mnns){
       if (this.type == null){
         this.type = type;
@@ -504,7 +603,15 @@ var mg = (function () {
     }
 
 
-    draw(rd, highlight, mnns, topMnn){
+    /**
+     * Draw the cell based on the given render data and highlight flag.
+     * @param {Object} rd - Render data object that contains gridX, gridY,
+     * gridWidth, gridHeight, colNo and rowNo.
+     * @param {boolean} highlight - Whether to highlight the cell.
+     * @param {Array} mnns - Array of MIDI note numbers.
+     * @param {number} topMnn - Top MIDI note number.
+     */
+     draw(rd, highlight, mnns, topMnn){
       if (rd){
         this.gridX = rd.gridX;
         this.gridY = rd.gridY;
@@ -547,7 +654,11 @@ var mg = (function () {
       // this.sk.noTint()
     }
 
-
+    /**
+     * Set the background of the cell
+     *
+     * @param {string} str - The type of background to set. Either "highlight" or anything else.
+     */
     set_background(str){
       if (str == "highlight"){
         this.draw(null, true);
@@ -563,7 +674,10 @@ var mg = (function () {
     //   this.add_text()
     // }
 
-
+    /**
+     * Check if mouse touch is inside the cell.
+     * @return {Object} An object containing the row number and column number of the cell if the mouse touch is inside the cell, otherwise undefined.
+     */
     touch_check(){
       if (
         this.sk.mouseX > this.x && this.sk.mouseX < this.x + this.w &&
@@ -681,7 +795,11 @@ var mg = (function () {
       });
     }
 
-
+    /**
+   * Load an envelope from an input string specifying the type of musical
+   * dimension.
+   * @param {string} str - The string specifying the type of musical dimension.
+   */
     load(str){
       // if (prm.printConsoleLogs){
       //   console.log("Loading envelope for str:", str)
@@ -1306,7 +1424,12 @@ var mg = (function () {
       this.draw();
     }
 
-
+    /**
+     * onclick method for Envelope class
+     * @param {string} str - The type of node to be created
+     * @param {object} _grid - The grid object
+     * @param {object} _sonic - The sonic object
+     */
     onclick(str, _grid, _sonic){
       // if (prm.printConsoleLogs) { console.log("Envelope \"" + this.name + "\" has been clicked!") }
       const xLoc = (this.sk.mouseX - this.inner.x - this.nodeDiameter/2)/(this.inner.width - this.nodeDiameter);
@@ -1489,6 +1612,11 @@ var mg = (function () {
     }
 
 
+    /**
+     * Push a time/value pair onto this envelope's data, maintaining sorted order.
+     * @param {number} time - The time of the pair to add.
+     * @param {number} value - The value of the pair to add.
+     */
     push_sorted(aNode){
       let relIdx;
       let i = 0;
@@ -1507,12 +1635,21 @@ var mg = (function () {
       }
     }
 
-
+    /**
+     * Toggle the active status of this envelope.
+     */
     toggle_active(){
       this.active = !this.active;
     }
 
-
+    /**
+     * Touch check method for Envelope class
+     *
+     * @param {string} touchType - touch type ('touchStarted', 'touchMoved', 'touchEnded')
+     * @param {string} str - string parameter
+     * @param {Object} _grid - grid object
+     * @param {Object} _sonic - sonic object
+     */
     touch_check(touchType, str, _grid, _sonic){
       // Check if a select menu is showing or the touch is outside the envelope
       // area.
@@ -1606,7 +1743,7 @@ var mg = (function () {
     }
 
     /**
-     * compare_to is the best!
+     * Method to compare this node with surrounding nodes.
      * @param  {Object} fruit      [description]
      * @param  {String} fruit.name [description]
      * @return {String}            [description]
@@ -1631,7 +1768,9 @@ var mg = (function () {
       }
     }
 
-
+    /**
+     * Draw the EnvelopeNode on the canvas.
+     */
     draw(){
       // if (prm.printConsoleLogs) { console.log("AGAIN YES!") }
       this.sk.fill(this.fillColor);
@@ -1640,7 +1779,14 @@ var mg = (function () {
       this.sk.circle(this.pixelX, this.pixelY, this.diameter);
     }
 
-
+    /**
+     * Method to move the node.
+     * @param {string} touchType - Type of touch event (touchStarted, touchMoved, touchEnded).
+     * @param {object} theEnv - The Envelope object that this node belongs to.
+     * @param {number} theNodeIdx - The index of this node within the Envelope's nodes array.
+     * @param {object} theGrid - The Grid object that this node belongs to.
+     * @param {object} theSonic - The Sonic object that this node belongs to.
+     */
     move(touchType, theEnv, theNodeIdx, theGrid, theSonic){
       const self = this;
 
@@ -2044,12 +2190,17 @@ var mg = (function () {
       // }
     }
 
-
+    /**
+     * Toggles the "beingMoved" property of the node.
+     */
     toggle_being_moved(){
       this.beingMoved = !this.beingMoved;
     }
 
-
+    /**
+     * Checks if the mouse touch is within the bounds of the node.
+     * @returns {boolean} Returns true if the mouse touch is within the node bounds, else returns false.
+     */
     touch_check(){
       if (this.sk.dist(this.sk.mouseX, this.sk.mouseY, this.pixelX, this.pixelY) < this.diameter/2){
         // if (prm.printConsoleLogs) { console.log("GOT TO A TOUCH CHECK IN EnvelopeNode " + this.id + "!") }
@@ -2236,12 +2387,20 @@ var mg = (function () {
     }
   }
 
+  /**
+   * Class that represents a help functionality for a sketch.
+   */
   class Help {
-    constructor(theSketch, theMode){
+    /**
+     * Creates an instance of Help.
+     * @param {object} _sketch - The sketch to be used with this help functionality.
+     * @param {boolean} _mode - The current mode of this help functionality.
+     */
+    constructor(_sketch, _mode){
       // Workaround for JS context peculiarities.
       // const self = this
-      this.sk = theSketch;
-      this.mode = theMode;
+      this.sk = _sketch;
+      this.mode = _mode;
       this.idCurr = "Help home";
       this.displayInfo = [
         {
@@ -2296,6 +2455,9 @@ var mg = (function () {
       // return sth;
     }
 
+    /**
+     * Draws the help content.
+     */
     draw(){
       const self = this;
       this.sk.noStroke();
@@ -2360,6 +2522,12 @@ var mg = (function () {
 
     }
 
+    /**
+     * Draws the close button in the top-right corner.
+     * @param {number} r - The red value of the color of the close button.
+     * @param {number} g - The green value of the color of the close button.
+     * @param {number} b - The blue value of the color of the close button.
+     */
     draw_close_button(r, g, b){
       //  Close button in top-right corner
       if (g == undefined && b == undefined){
@@ -2481,7 +2649,21 @@ var mg = (function () {
   */
 
   class Dial {
-    constructor(_sketch, _id, _x, _y, _radius, _min = 0, _max = 1, _val = 0.5, _step = null){
+    /**
+     * Constructor for the Dial class, representing a dial in a sketch.
+     * @param {p5} _sketch - The p5 instance that creates the dial.
+     * @param {number} _id - A unique identifier for the dial.
+     * @param {number} _x - The x-coordinate of the center of the dial.
+     * @param {number} _y - The y-coordinate of the center of the dial.
+     * @param {number} _radius - The radius of the dial.
+     * @param {number} [_min=0] - The minimum value of the dial.
+     * @param {number} [_max=1] - The maximum value of the dial.
+     * @param {number} [_val=0.5] - The starting value of the dial.
+     * @param {number} [_step=null] - The step size of the dial.
+     */
+    constructor(
+      _sketch, _id, _x, _y, _radius, _min = 0, _max = 1, _val = 0.5, _step = null
+    ){
       this.sk = _sketch;
       this.id = _id;
       this.x = _x;
@@ -2513,7 +2695,9 @@ var mg = (function () {
       this.moving = false;
     }
 
-
+    /**
+     * Draws the dial on the canvas.
+     */
     draw(){
       this.sk.strokeWeight(3);
       this.sk.stroke(this.fgCol);
@@ -2549,13 +2733,19 @@ var mg = (function () {
       this.sk.text(this.id, this.x, this.y + this.radius + 13);
     }
 
-
+    /**
+     * Pairs a dial with a Tone.js object and its property.
+     * @param {Object} toneObj - The Tone.js object to pair the dial with.
+     * @param {string} toneObjProperty - The property of the Tone.js object to pair the dial with.
+     */
     pair(toneObj, toneObjProperty){
       this.toneObj = toneObj;
       this.toneObjProperty = toneObjProperty;
     }
 
-
+    /**
+     * Method to set the value of a property on a Tone.js object based on the value of the dial.
+     */
     set_pair_val(){
       // console.log("this.val:", this.val)
       switch(this.toneObjProperty){
@@ -2587,7 +2777,17 @@ var mg = (function () {
         // })
     }
 
-
+    /**
+     * Map mouse position to dial value
+     *
+     * This method maps the mouse position relative to the dial
+     * to a value between `min` and `max` properties. The value
+     * is also rounded to the nearest `step` if a `step` has been
+     * provided in the dial constructor. The value is stored in the
+     * `val` property and if a Tone.js object property has been paired
+     * with this dial, the value is also updated on the paired Tone.js
+     * object property.
+     */
     set_val(){
       // Alpha is small +ve in first quadrant,
       // approaching +PI by end of second quadrant,
@@ -2636,12 +2836,19 @@ var mg = (function () {
       }
     }
 
-
+    /**
+     * Toggles the moving state of the dial.
+     */
     toggle_moving(){
       this.moving = !this.moving;
     }
 
-
+    /**
+     * Determines whether the current mouse position is within the radius of the dial's center point.
+     *
+     * @function
+     * @returns {boolean} - True if the mouse position is within the dial's radius; false otherwise.
+     */
     touch_check(){
       return this.sk.dist(
         this.sk.mouseX, this.sk.mouseY, this.x, this.y
@@ -2649,9 +2856,19 @@ var mg = (function () {
     }
   }
 
+  /**
+   * Class representing the grid in the melEd.
+   * @class
+   */
   class Grid {
-    constructor(theSketch, param, melEd){
-      this.sk = theSketch;
+    /**
+     * Creates a Grid.
+     * @param {p5} _sketch - The p5.js sketch.
+     * @param {Object} param - Object containing parameters.
+     * @param {Object} melEd - The melEd object.
+     */
+    constructor(_sketch, param, melEd){
+      this.sk = _sketch;
       // Handle grid and inner grid.
       this.x = param.grid.x || melEd.x;
       this.y = param.grid.y || melEd.y + 1.25/10*melEd.height;
@@ -2755,7 +2972,12 @@ var mg = (function () {
 
     }
 
-
+    /**
+     * Creates an array of oblongs for the given component.
+     * @param {Object} c - The Composition object for which to create the array of
+     * oblongs.
+     * @returns {Array} oblongs - The array of oblongs for the given component.
+     */
     comp_obj2oblongs(c){
       const self = this;
       // Dissociated granularity and zoom, so forcing this to 1 for now.
@@ -2812,16 +3034,22 @@ var mg = (function () {
 
     }
 
-
-    cycle_logos(theVisual){
+    /**
+     * Cycles through logos in the inner object every 5 seconds.
+     * @param {Visual} _visual - The {@link Visual} class instance.
+     */
+    cycle_logos(_visual){
       const self = this;
       setInterval(function(){
         self.inner.currBackImg = mu.choose_one(self.inner.backImg);
-        theVisual.draw();
+        _visual.draw();
       }, 5000);
     }
 
-
+    /**
+     * Draws the grid.
+     * @param {Boolean} recalculateDimensions - Whether to recalculate the dimensions.
+     */
     draw(recalculateDimensions){
       const self = this;
       const gFloat = self.string_fraction2decimal(self.param.gran.value);
@@ -2907,7 +3135,12 @@ var mg = (function () {
       });
     }
 
-
+    /**
+     * Gets MIDI note numbers within the given range, given the array of pitch classes.
+     * @param {Array} pitchClasses - The array of pitch classes.
+     * @param {Array} mnnRange - The range of MIDI note numbers.
+     * @returns {Array} allMnns - The array of MIDI note numbers.
+     */
     get_mnns(pitchClasses, mnnRange){
       // console.log("pitchClasses:", pitchClasses)
       // console.log("mnnRange:", mnnRange)
@@ -2944,8 +3177,12 @@ var mg = (function () {
       return allMnns
     }
 
-
-    touch_check(touchType, theSound){
+    /**
+     * Checks for touch events.
+     * @param {String} touchType - The type of touch event.
+     * @param {Sonic} sonic - The {@link Sonic} class instance.
+     */
+    touch_check(touchType, _sonic){
       const self = this;
       // Check if a select submenu is showing?
       switch (touchType){
@@ -3006,7 +3243,7 @@ var mg = (function () {
           });
           // console.log("oblong:", oblong)
           if (oblong !== undefined){
-            oblong.widen(touchType, self, theSound);
+            oblong.widen(touchType, self, _sonic);
           }
         }
         break
@@ -3016,7 +3253,7 @@ var mg = (function () {
           const oblong = self.inner.oblongs.find(function(o){ return o.beingDrawn });
           // console.log("oblong:", oblong)
           if (oblong !== undefined){
-            oblong.widen(touchType, self, theSound);
+            oblong.widen(touchType, self, _sonic);
             oblong.toggle_being_drawn();
           }
         }
@@ -3047,7 +3284,7 @@ var mg = (function () {
             self.inner.oblongs.splice(relIdx, 1);
             // Redraw. Could be constrained to redrawing a single row...
             self.draw();
-            theSound.schedule_events(compObj, prodObj, self);
+            _sonic.schedule_events(compObj, prodObj, self);
           }
 
 
@@ -3067,7 +3304,7 @@ var mg = (function () {
           if (relIdx >= 0){
             if (self.inner.selectedOblong.idNote == self.inner.oblongs[relIdx].idNote){
               // Clicked on the already-highlighted oblong. Change it's duration.
-              theSound.check_and_implement_edit(compObj, "shorten", self);
+              _sonic.check_and_implement_edit(compObj, "shorten", self);
             }
             else {
               // Change which oblong is highlighted.
@@ -3088,7 +3325,11 @@ var mg = (function () {
 
     }
 
-
+    /**
+     * Converts a string fraction to a decimal.
+     * @param {String} str - The string fraction.
+     * @returns {Number} ans - The decimal representation of the string fraction.
+     */
     string_fraction2decimal(str){
       let ans;
       if (str.indexOf("/") >= 0){
@@ -3237,6 +3478,7 @@ var mg = (function () {
       this.y = _y;
       this.rectH = _rectH;
       this.secPerBox = _secPerBox;
+      this.wvfs = _wvfs;
       this.dragOffset = {};
       this.moving = false;
 
@@ -3272,7 +3514,7 @@ var mg = (function () {
 
           // Buffer
           const buffer = self.player.buffer;
-          console.log("buffer:", buffer);
+          // console.log("buffer:", buffer)
           self.duration = buffer._buffer.duration;
           self.fs = buffer._buffer.sampleRate;
           self.nosSamples = buffer._buffer.length;
@@ -3283,7 +3525,7 @@ var mg = (function () {
 
           // Do something with the buffer.
           self.vals = self.get_wav_summary(buffer);
-          console.log("self.vals:", self.vals);
+          // console.log("self.vals:", self.vals)
           self.render();
           _wvfs.draw();
 
@@ -3293,7 +3535,7 @@ var mg = (function () {
 
 
     draw(){
-      image(this.graphicsBuffer, this.x, this.y);
+      this.sk.image(this.graphicsBuffer, this.x, this.y);
     }
 
     /**
@@ -3354,7 +3596,7 @@ var mg = (function () {
       const y = self.y;
       const w = self.w;
       const h = self.h;
-      console.log("[x, y, w, h]:", [x, y, w, h]);
+      // console.log("[x, y, w, h]:", [x, y, w, h])
 
       // Save to a graphics buffer for ease of use with playback.
       self.graphicsBuffer = self.sk.createGraphics(w, h);
@@ -3363,7 +3605,7 @@ var mg = (function () {
       self.graphicsBuffer.rect(0, 0, w, h);
       // image(self.graphicsBuffer, x, y)
 
-      console.log("self.nBox:", self.nBox);
+      // console.log("self.nBox:", self.nBox)
       if (self.nBox === undefined){
         // Untested!
         self.graphicsBuffer.stroke(0);
@@ -3398,7 +3640,6 @@ var mg = (function () {
           }
         });
       }
-      console.log("GOT HERE!");
 
       // self.graphicsBuffer.copy(
       //   // source
@@ -3428,19 +3669,20 @@ var mg = (function () {
 
 
     touch_end(_x, _w){
-      this.player.unsync();
+      const self = this;
+      self.player.unsync();
       const startTime = this.sk.map(
-        this.x, _x, _x + _w,
-        screenLRepresents, screenLRepresents + screenWRepresents
+        self.x, _x, _x + _w,
+        self.wvfs.xInSec, self.wvfs.xInSec + self.wvfs.wInSec
       );
       console.log("startTime:", startTime);
       if (startTime >= 0){
-        this.player.sync().start(startTime);
+        self.player.sync().start(startTime);
       }
       else {
-        this.player.sync().start(0, -startTime);
+        self.player.sync().start(0, -startTime);
       }
-      this.moving = false;
+      self.moving = false;
     }
   }
 

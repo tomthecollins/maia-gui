@@ -18,6 +18,7 @@ class Waveform {
     this.y = _y
     this.rectH = _rectH
     this.secPerBox = _secPerBox
+    this.wvfs = _wvfs
     this.dragOffset = {}
     this.moving = false
 
@@ -53,7 +54,7 @@ class Waveform {
 
         // Buffer
         const buffer = self.player.buffer
-        console.log("buffer:", buffer)
+        // console.log("buffer:", buffer)
         self.duration = buffer._buffer.duration
         self.fs = buffer._buffer.sampleRate
         self.nosSamples = buffer._buffer.length
@@ -64,7 +65,7 @@ class Waveform {
 
         // Do something with the buffer.
         self.vals = self.get_wav_summary(buffer)
-        console.log("self.vals:", self.vals)
+        // console.log("self.vals:", self.vals)
         self.render()
         _wvfs.draw()
 
@@ -74,7 +75,7 @@ class Waveform {
 
 
   draw(){
-    image(this.graphicsBuffer, this.x, this.y)
+    this.sk.image(this.graphicsBuffer, this.x, this.y)
   }
 
   /**
@@ -208,19 +209,20 @@ class Waveform {
 
 
   touch_end(_x, _w){
-    this.player.unsync()
+    const self = this
+    self.player.unsync()
     const startTime = this.sk.map(
-      this.x, _x, _x + _w,
-      screenLRepresents, screenLRepresents + screenWRepresents
+      self.x, _x, _x + _w,
+      self.wvfs.xInSec, self.wvfs.xInSec + self.wvfs.wInSec
     )
     console.log("startTime:", startTime)
     if (startTime >= 0){
-      this.player.sync().start(startTime)
+      self.player.sync().start(startTime)
     }
     else {
-      this.player.sync().start(0, -startTime)
+      self.player.sync().start(0, -startTime)
     }
-    this.moving = false
+    self.moving = false
   }
 }
 export default Waveform

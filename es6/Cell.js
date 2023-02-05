@@ -10,22 +10,35 @@
 */
 
 class Cell {
+  /**
+   * Creates a Cell.
+   * @param {Object} _sketch - The sketch object to be used.
+   * @param {Boolean} _checkTint - Handles the black or white of keyboard notes.
+   * @param {Number} _rowNo - The row number of the cell.
+   * @param {Number} _colNo - The column number of the cell.
+   * @param {Number} _nosRow - The number of rows in the grid.
+   * @param {Number} _nosCol - The number of columns in the grid.
+   * @param {Number} _gridX - The x coordinate of the grid.
+   * @param {Number} _gridY - The y coordinate of the grid.
+   * @param {Number} _gridWidth - The width of the grid.
+   * @param {Number} _gridHeight - The height of the grid.
+   */
   constructor(
-    theSketch, theCheckTint, theRowNo, theColNo, theNosRow, theNosCol,
-    theGridX, theGridY, theGridWidth, theGridHeight
+    _sketch, _checkTint, _rowNo, _colNo, _nosRow, _nosCol, _gridX, _gridY,
+    _gridWidth, _gridHeight
   ){
     // Workaround for JS context peculiarities.
     // var self = this;
-    this.sk = theSketch
-    this.checkTint = theCheckTint // Handles b/w of keyboard notes.
-    this.rowNo = theRowNo
-    this.colNo = theColNo
-    this.nosRow = theNosRow
-    this.nosCol = theNosCol
-    this.gridX = theGridX
-    this.gridY = theGridY
-    this.gridWidth = theGridWidth
-    this.gridHeight = theGridHeight
+    this.sk = _sketch
+    this.checkTint = _checkTint // Handles b/w of keyboard notes.
+    this.rowNo = _rowNo
+    this.colNo = _colNo
+    this.nosRow = _nosRow
+    this.nosCol = _nosCol
+    this.gridX = _gridX
+    this.gridY = _gridY
+    this.gridWidth = _gridWidth
+    this.gridHeight = _gridHeight
     this.x = this.gridX + this.colNo/this.nosCol*this.gridWidth
     this.y = this.gridY + this.rowNo/this.nosRow*this.gridHeight
     this.w = this.gridWidth/this.nosCol
@@ -38,7 +51,13 @@ class Cell {
     // return sth;
   }
 
-
+  /**
+   * Adds text to the cell.
+   * @param {String} type - The type of text to be added.
+   * @param {Number} startVal - The starting value of the text.
+   * @param {Number} sf - The scaling factor of the text.
+   * @param {Array} mnns - An array of musical note numbers.
+   */
   add_text(type, startVal, sf, mnns){
     if (this.type == null){
       this.type = type
@@ -64,7 +83,15 @@ class Cell {
   }
 
 
-  draw(rd, highlight, mnns, topMnn){
+  /**
+   * Draw the cell based on the given render data and highlight flag.
+   * @param {Object} rd - Render data object that contains gridX, gridY,
+   * gridWidth, gridHeight, colNo and rowNo.
+   * @param {boolean} highlight - Whether to highlight the cell.
+   * @param {Array} mnns - Array of MIDI note numbers.
+   * @param {number} topMnn - Top MIDI note number.
+   */
+   draw(rd, highlight, mnns, topMnn){
     if (rd){
       this.gridX = rd.gridX
       this.gridY = rd.gridY
@@ -107,7 +134,11 @@ class Cell {
     // this.sk.noTint()
   }
 
-
+  /**
+   * Set the background of the cell
+   *
+   * @param {string} str - The type of background to set. Either "highlight" or anything else.
+   */
   set_background(str){
     if (str == "highlight"){
       this.draw(null, true)
@@ -123,7 +154,10 @@ class Cell {
   //   this.add_text()
   // }
 
-
+  /**
+   * Check if mouse touch is inside the cell.
+   * @return {Object} An object containing the row number and column number of the cell if the mouse touch is inside the cell, otherwise undefined.
+   */
   touch_check(){
     if (
       this.sk.mouseX > this.x && this.sk.mouseX < this.x + this.w &&

@@ -5,7 +5,21 @@
 */
 
 class Dial {
-  constructor(_sketch, _id, _x, _y, _radius, _min = 0, _max = 1, _val = 0.5, _step = null){
+  /**
+   * Constructor for the Dial class, representing a dial in a sketch.
+   * @param {p5} _sketch - The p5 instance that creates the dial.
+   * @param {number} _id - A unique identifier for the dial.
+   * @param {number} _x - The x-coordinate of the center of the dial.
+   * @param {number} _y - The y-coordinate of the center of the dial.
+   * @param {number} _radius - The radius of the dial.
+   * @param {number} [_min=0] - The minimum value of the dial.
+   * @param {number} [_max=1] - The maximum value of the dial.
+   * @param {number} [_val=0.5] - The starting value of the dial.
+   * @param {number} [_step=null] - The step size of the dial.
+   */
+  constructor(
+    _sketch, _id, _x, _y, _radius, _min = 0, _max = 1, _val = 0.5, _step = null
+  ){
     this.sk = _sketch
     this.id = _id
     this.x = _x
@@ -37,7 +51,9 @@ class Dial {
     this.moving = false
   }
 
-
+  /**
+   * Draws the dial on the canvas.
+   */
   draw(){
     this.sk.strokeWeight(3)
     this.sk.stroke(this.fgCol)
@@ -73,13 +89,19 @@ class Dial {
     this.sk.text(this.id, this.x, this.y + this.radius + 13)
   }
 
-
+  /**
+   * Pairs a dial with a Tone.js object and its property.
+   * @param {Object} toneObj - The Tone.js object to pair the dial with.
+   * @param {string} toneObjProperty - The property of the Tone.js object to pair the dial with.
+   */
   pair(toneObj, toneObjProperty){
     this.toneObj = toneObj
     this.toneObjProperty = toneObjProperty
   }
 
-
+  /**
+   * Method to set the value of a property on a Tone.js object based on the value of the dial.
+   */
   set_pair_val(){
     // console.log("this.val:", this.val)
     switch(this.toneObjProperty){
@@ -112,7 +134,17 @@ class Dial {
       // })
   }
 
-
+  /**
+   * Map mouse position to dial value
+   *
+   * This method maps the mouse position relative to the dial
+   * to a value between `min` and `max` properties. The value
+   * is also rounded to the nearest `step` if a `step` has been
+   * provided in the dial constructor. The value is stored in the
+   * `val` property and if a Tone.js object property has been paired
+   * with this dial, the value is also updated on the paired Tone.js
+   * object property.
+   */
   set_val(){
     // Alpha is small +ve in first quadrant,
     // approaching +PI by end of second quadrant,
@@ -161,12 +193,19 @@ class Dial {
     }
   }
 
-
+  /**
+   * Toggles the moving state of the dial.
+   */
   toggle_moving(){
     this.moving = !this.moving
   }
 
-
+  /**
+   * Determines whether the current mouse position is within the radius of the dial's center point.
+   *
+   * @function
+   * @returns {boolean} - True if the mouse position is within the dial's radius; false otherwise.
+   */
   touch_check(){
     return this.sk.dist(
       this.sk.mouseX, this.sk.mouseY, this.x, this.y

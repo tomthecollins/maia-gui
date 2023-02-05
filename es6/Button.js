@@ -1,18 +1,33 @@
-export default class Button {
-  constructor(
-    theSketch, theLabelImg, theDisabled, theClicked, theX, theY, theWidth, theHeight
+/**
+ * Class representing a button
+ * @class
+ */
+class Button {
+  /**
+   * Creates a button
+   * @param {p5} _sketch - The p5 sketch
+   * @param {p5.Image} _labelImg - The image for the button label
+   * @param {Boolean} _disabled - Flag for whether the button is disabled
+   * @param {Boolean} _clicked - Flag for whether the button is clicked
+   * @param {Number} _x - The x-coordinate for the button's position
+   * @param {Number} _y - The y-coordinate for the button's position
+   * @param {Number} _width - The width of the button
+   * @param {Number} _height - The height of the button
+   */
+   constructor(
+    _sketch, _labelImg, _disabled, _clicked, _x, _y, _width, _height
   ){
     // Workaround for JS context peculiarities.
     // var self = this;
-    this.sk = theSketch
-    this.labelImg = theLabelImg
+    this.sk = _sketch
+    this.labelImg = _labelImg
     // this.label = theLabel
-    this.disabled = theDisabled
-    this.clicked = theClicked
-    this.x = theX
-    this.y = theY
-    this.w = theWidth
-    this.h = theHeight
+    this.disabled = _disabled
+    this.clicked = _clicked
+    this.x = _x
+    this.y = _y
+    this.w = _width
+    this.h = _height
     this.buttonStroke = this.sk.color("#17baef")
     this.buttonFill = this.sk.color("#074f66")
     // this.labelFill = this.sk.color(225)
@@ -92,3 +107,4 @@ export default class Button {
   }
 
 }
+export default Button

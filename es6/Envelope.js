@@ -104,7 +104,11 @@ class Envelope {
     })
   }
 
-
+  /**
+ * Load an envelope from an input string specifying the type of musical
+ * dimension.
+ * @param {string} str - The string specifying the type of musical dimension.
+ */
   load(str){
     // if (prm.printConsoleLogs){
     //   console.log("Loading envelope for str:", str)
@@ -729,7 +733,12 @@ class Envelope {
     this.draw()
   }
 
-
+  /**
+   * onclick method for Envelope class
+   * @param {string} str - The type of node to be created
+   * @param {object} _grid - The grid object
+   * @param {object} _sonic - The sonic object
+   */
   onclick(str, _grid, _sonic){
     // if (prm.printConsoleLogs) { console.log("Envelope \"" + this.name + "\" has been clicked!") }
     const xLoc = (this.sk.mouseX - this.inner.x - this.nodeDiameter/2)/(this.inner.width - this.nodeDiameter)
@@ -912,6 +921,11 @@ class Envelope {
   }
 
 
+  /**
+   * Push a time/value pair onto this envelope's data, maintaining sorted order.
+   * @param {number} time - The time of the pair to add.
+   * @param {number} value - The value of the pair to add.
+   */
   push_sorted(aNode){
     let relIdx
     let i = 0
@@ -930,12 +944,21 @@ class Envelope {
     }
   }
 
-
+  /**
+   * Toggle the active status of this envelope.
+   */
   toggle_active(){
     this.active = !this.active
   }
 
-
+  /**
+   * Touch check method for Envelope class
+   *
+   * @param {string} touchType - touch type ('touchStarted', 'touchMoved', 'touchEnded')
+   * @param {string} str - string parameter
+   * @param {Object} _grid - grid object
+   * @param {Object} _sonic - sonic object
+   */
   touch_check(touchType, str, _grid, _sonic){
     // Check if a select menu is showing or the touch is outside the envelope
     // area.

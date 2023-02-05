@@ -1,13 +1,26 @@
+/**
+ * Class representing GranularityButtons.
+ * @extends Buttons
+ */
 class GranularityButtons extends Buttons {
-  constructor(_sketch, _buttonsStruct, _containerDimensions){
+  /**
+   * Create a GranularityButtons.
+   * @param {Object} _sketch - p5.js sketch object.
+   * @param {Object} _buttonsStruct - Object containing button properties.
+   * @param {Object} _containerDimensions - Object containing button container dimensions.
+   */
+  constructor(_sketch, _buttonsStruct, _containerDimensions) {
     super(_sketch, _buttonsStruct, _containerDimensions)
     // Any extra properties/actions here, which could have been
     // passed into the constructor also...
     // this.subject = subject
-
   }
 
-  touch_check(theGrid){
+  /**
+   * Check if the button is touched and update the granularity value.
+   * @param {Object} theGrid - Object containing grid properties.
+   */
+  touch_check(theGrid) {
     const self = this
     const helperResult = self.touch_check_helper()
     if (!helperResult.click) { return }
@@ -44,6 +57,5 @@ class GranularityButtons extends Buttons {
 
     }
   }
-
 }
 export default GranularityButtons

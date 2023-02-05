@@ -1,4 +1,15 @@
-export default class EditButtons extends Buttons {
+/**
+ * A class that extends the Buttons class and provides extra methods for touch checking in a grid editing context.
+ * @extends Buttons
+ */
+
+class EditButtons extends Buttons {
+  /**
+   * Creates a new instance of EditButtons.
+   * @param {p5} _sketch - A p5.js sketch instance.
+   * @param {Object} _buttonsStruct - An object containing button structure information.
+   * @param {Object} _containerDimensions - An object containing dimensions of the container holding the buttons.
+   */
   constructor(_sketch, _buttonsStruct, _containerDimensions){
     super(_sketch, _buttonsStruct, _containerDimensions)
     // Any extra properties/actions here, which could have been
@@ -7,6 +18,11 @@ export default class EditButtons extends Buttons {
 
   }
 
+  /**
+   * Handles touch checking for EditButtons instances.
+   * @param {Grid} theGrid - An instance of the Grid class.
+   * @param {NavButtons} navignBtns - An instance of the NavButtons class.
+   */
   touch_check(theGrid, navignBtns){
     const self = this
     const helperResult = self.touch_check_helper()
@@ -71,3 +87,4 @@ export default class EditButtons extends Buttons {
   }
 
 }
+export default EditButtons

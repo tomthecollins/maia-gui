@@ -49,7 +49,7 @@ class EnvelopeNode {
   }
 
   /**
-   * compare_to is the best!
+   * Method to compare this node with surrounding nodes.
    * @param  {Object} fruit      [description]
    * @param  {String} fruit.name [description]
    * @return {String}            [description]
@@ -74,7 +74,9 @@ class EnvelopeNode {
     }
   }
 
-
+  /**
+   * Draw the EnvelopeNode on the canvas.
+   */
   draw(){
     // if (prm.printConsoleLogs) { console.log("AGAIN YES!") }
     this.sk.fill(this.fillColor)
@@ -83,7 +85,14 @@ class EnvelopeNode {
     this.sk.circle(this.pixelX, this.pixelY, this.diameter)
   }
 
-
+  /**
+   * Method to move the node.
+   * @param {string} touchType - Type of touch event (touchStarted, touchMoved, touchEnded).
+   * @param {object} theEnv - The Envelope object that this node belongs to.
+   * @param {number} theNodeIdx - The index of this node within the Envelope's nodes array.
+   * @param {object} theGrid - The Grid object that this node belongs to.
+   * @param {object} theSonic - The Sonic object that this node belongs to.
+   */
   move(touchType, theEnv, theNodeIdx, theGrid, theSonic){
     const self = this
 
@@ -487,12 +496,17 @@ class EnvelopeNode {
     // }
   }
 
-
+  /**
+   * Toggles the "beingMoved" property of the node.
+   */
   toggle_being_moved(){
     this.beingMoved = !this.beingMoved
   }
 
-
+  /**
+   * Checks if the mouse touch is within the bounds of the node.
+   * @returns {boolean} Returns true if the mouse touch is within the node bounds, else returns false.
+   */
   touch_check(){
     if (this.sk.dist(this.sk.mouseX, this.sk.mouseY, this.pixelX, this.pixelY) < this.diameter/2){
       // if (prm.printConsoleLogs) { console.log("GOT TO A TOUCH CHECK IN EnvelopeNode " + this.id + "!") }
