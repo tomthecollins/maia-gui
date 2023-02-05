@@ -12,10 +12,12 @@ class Waveform {
    * @param {Object} _sketch The p5 sketch in which one or more instances of the
    * Waveform class will exist.
    */
-  constructor(_sketch, _url, _x, _y, _wvfs){
+  constructor(_sketch, _url, _x, _y, _rectH, _secPerBox, _wvfs){
     this.sk = _sketch
     this.x = _x
     this.y = _y
+    this.rectH = _rectH
+    this.secPerBox = _secPerBox
     this.dragOffset = {}
     this.moving = false
 
@@ -27,9 +29,9 @@ class Waveform {
         console.log("Loaded!")
         self.player.volume.value = -15
         // Handle scheduling of waveforms.
-        const startTime = map(
+        const startTime = self.sk.map(
           self.x, _wvfs.x, _wvfs.x + _wvfs.w,
-          screenLRepresents, screenLRepresents + screenWRepresents
+          _wvfs.xInSec, _wvfs.xInSec + _wvfs.wInSec
         )
         console.log("startTime:", startTime)
         if (startTime >= 0){
@@ -55,13 +57,14 @@ class Waveform {
         self.duration = buffer._buffer.duration
         self.fs = buffer._buffer.sampleRate
         self.nosSamples = buffer._buffer.length
-        self.w = _wvfs.w*self.duration/screenWRepresents
+        self.w = _wvfs.w*self.duration/_wvfs.wInSec
         // Potentially obsolete but render() uses it still at the mo.
-        self.nBox = self.duration/boxDuration
-        self.h = wavfHeight
+        self.nBox = self.duration/self.secPerBox
+        self.h = self.rectH
 
         // Do something with the buffer.
         self.vals = self.get_wav_summary(buffer)
+        console.log("self.vals:", self.vals)
         self.render()
         _wvfs.draw()
 
@@ -93,8 +96,9 @@ class Waveform {
       return chData
     }
     else {
+
       // Boxing/summary required.
-      const idxSpacing = Math.round(this.fs*boxDuration)
+      const idxSpacing = Math.round(this.fs*this.secPerBox)
       const boxesToDraw = new Array(
         Math.ceil(this.nosSamples/idxSpacing)
       )
@@ -120,8 +124,8 @@ class Waveform {
 
 
   move(){
-    this.x = mouseX - this.dragOffset.x
-    this.y = mouseY - this.dragOffset.y
+    this.x = this.sk.mouseX - this.dragOffset.x
+    this.y = this.sk.mouseY - this.dragOffset.y
   }
 
 
@@ -140,7 +144,7 @@ class Waveform {
     self.graphicsBuffer.rect(0, 0, w, h)
     // image(self.graphicsBuffer, x, y)
 
-    console.log("self.nBox:", self.nBox)
+    // console.log("self.nBox:", self.nBox)
     if (self.nBox === undefined){
       // Untested!
       self.graphicsBuffer.stroke(0)
@@ -188,14 +192,14 @@ class Waveform {
 
 
   touch_check(){
-    if (mouseX >= this.x &&
-      mouseX < this.x + this.w &&
-      mouseY >= this.y &&
-      mouseY < this.y + this.h
+    if (this.sk.mouseX >= this.x &&
+      this.sk.mouseX < this.x + this.w &&
+      this.sk.mouseY >= this.y &&
+      this.sk.mouseY < this.y + this.h
     ){
       this.dragOffset = {
-        "x": mouseX - this.x,
-        "y": mouseY - this.y
+        "x": this.sk.mouseX - this.x,
+        "y": this.sk.mouseY - this.y
       }
       this.moving = true
       return true
@@ -205,7 +209,7 @@ class Waveform {
 
   touch_end(_x, _w){
     this.player.unsync()
-    const startTime = map(
+    const startTime = this.sk.map(
       this.x, _x, _x + _w,
       screenLRepresents, screenLRepresents + screenWRepresents
     )

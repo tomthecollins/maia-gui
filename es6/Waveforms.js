@@ -1,60 +1,63 @@
 export default class Waveforms {
-  constructor(_sketch, _x, _y, _w, _h){
+  constructor(_sketch, _x, _y, _w, _h, _xInSec, _wInSec){
     this.sk = _sketch
     this.x = _x
     this.y = _y
     this.w = _w
     this.h = _h
+    this.xInSec = _xInSec
+    this.wInSec = _wInSec
 
     this.arr = []
     this.movingIdx = -1
   }
 
 
-  add_waveform(_url, _x, _y){
+  add_waveform(_url, _x, _y, _rectH, _secPerBox){
     this.arr.push(
-      new Waveform(_sketch, _url, _x, _y, this)
+      new Waveform(this.sk, _url, _x, _y, _rectH, _secPerBox, this)
     )
   }
 
 
   draw(){
-    this.sk.background(220)
+    const self = this
+    self.sk.background(220)
     // Outer rectangle
-    this.sk.push()
-    this.sk.noFill()
-    this.sk.stroke(100, 100, 130)
-    this.sk.strokeWeight(6)
-    this.sk.rect(this.x - 3, this.y - 3, this.w + 6, this.h + 6, 5)
-    this.sk.pop()
+    self.sk.push()
+    self.sk.noFill()
+    self.sk.stroke(100, 100, 130)
+    self.sk.strokeWeight(6)
+    self.sk.rect(self.x - 3, self.y - 3, self.w + 6, self.h + 6, 5)
+    self.sk.pop()
 
     // Waveforms
-    this.sk.push()
-    this.sk.fill(220); this.sk.noStroke()
-    this.sk.rect(this.x, this.y, this.w, this.h)
-    this.sk.drawingContext.clip()
-    this.arr.forEach(function(wf){
+    self.sk.push()
+    self.sk.fill(220); self.sk.noStroke()
+    self.sk.rect(self.x, self.y, self.w, self.h)
+    self.sk.drawingContext.clip()
+    self.arr.forEach(function(wf){
       if (wf.graphicsBuffer){
         wf.draw()
       }
     })
-    this.sk.pop()
+    self.sk.pop()
 
     // Playhead
     if (
-      Tone.Transport.seconds >= screenLRepresents &&
-      Tone.Transport.seconds < screenLRepresents + screenWRepresents
+      Tone.Transport.seconds >= self.xInSec &&
+      Tone.Transport.seconds < self.xInSec + self.wInSec
     ){
-      this.sk.stroke(100, 100, 130)
-      const x = this.sk.map(
+      self.sk.stroke(100, 100, 130)
+      const x = self.sk.map(
         Tone.Transport.seconds,
-        screenLRepresents,
-        screenLRepresents + screenWRepresents,
-        this.x,
-        this.x + this.w
+        self.xInSec,
+        self.xInSec + self.wInSec,
+        self.x,
+        self.x + self.w
       )
-      this.sk.line(
-        x, this.y, x, this.y + this.h
+      self.sk.line(
+        x, self.y, x, self.y + self.h
       )
     }
   }

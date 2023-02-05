@@ -1,7 +1,7 @@
 {
   "name": "maia-gui-examples",
   "version": "0.0.1",
-  "description": "A melody sequencer with an evelope editor for automation",
+  "description": "An interface where audio files can be uploaded and sequenced",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

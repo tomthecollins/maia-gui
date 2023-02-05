@@ -96,7 +96,7 @@ var mg = (function () {
 
   }
 
-  class Buttons$1 {
+  class Buttons {
     constructor(_sketch, _buttonsStruct, _containerDimensions){
       this.sk = _sketch;
       this.buttonsStruct = _buttonsStruct;
@@ -449,7 +449,7 @@ var mg = (function () {
   * @class Cell
   */
 
-  class Cell$1 {
+  class Cell {
     constructor(
       theSketch, theCheckTint, theRowNo, theColNo, theNosRow, theNosCol,
       theGridX, theGridY, theGridWidth, theGridHeight
@@ -1564,7 +1564,7 @@ var mg = (function () {
   * @class EnvelopeNode
   */
 
-  class EnvelopeNode$1 {
+  class EnvelopeNode {
 
     /**
      * constructor description
@@ -2061,7 +2061,7 @@ var mg = (function () {
 
   }
 
-  class Oblong$1 {
+  class Oblong {
     constructor(
       theSketch, theBgnImg, theMidImg, theEndImg,
       theBeingDrawn, theRowNo, theColNo, theExtraCols = 0, idNote = null,
@@ -2480,7 +2480,7 @@ var mg = (function () {
   * @class Dial
   */
 
-  class Dial$1 {
+  class Dial {
     constructor(_sketch, _id, _x, _y, _radius, _min = 0, _max = 1, _val = 0.5, _step = null){
       this.sk = _sketch;
       this.id = _id;
@@ -3224,18 +3224,19 @@ var mg = (function () {
   * @class Waveform
   */
 
-  class Waveform$1 {
+  class Waveform {
 
     /**
      * Constructor for making a new instance of the Waveform class.
-     * @constructor
      * @param {Object} _sketch The p5 sketch in which one or more instances of the
      * Waveform class will exist.
      */
-    constructor(_sketch, _url, _x, _y, _wvfs){
+    constructor(_sketch, _url, _x, _y, _rectH, _secPerBox, _wvfs){
       this.sk = _sketch;
       this.x = _x;
       this.y = _y;
+      this.rectH = _rectH;
+      this.secPerBox = _secPerBox;
       this.dragOffset = {};
       this.moving = false;
 
@@ -3247,9 +3248,9 @@ var mg = (function () {
           console.log("Loaded!");
           self.player.volume.value = -15;
           // Handle scheduling of waveforms.
-          const startTime = map(
+          const startTime = self.sk.map(
             self.x, _wvfs.x, _wvfs.x + _wvfs.w,
-            screenLRepresents, screenLRepresents + screenWRepresents
+            _wvfs.xInSec, _wvfs.xInSec + _wvfs.wInSec
           );
           console.log("startTime:", startTime);
           if (startTime >= 0){
@@ -3275,13 +3276,14 @@ var mg = (function () {
           self.duration = buffer._buffer.duration;
           self.fs = buffer._buffer.sampleRate;
           self.nosSamples = buffer._buffer.length;
-          self.w = _wvfs.w*self.duration/screenWRepresents;
+          self.w = _wvfs.w*self.duration/_wvfs.wInSec;
           // Potentially obsolete but render() uses it still at the mo.
-          self.nBox = self.duration/boxDuration;
-          self.h = wavfHeight;
+          self.nBox = self.duration/self.secPerBox;
+          self.h = self.rectH;
 
           // Do something with the buffer.
           self.vals = self.get_wav_summary(buffer);
+          console.log("self.vals:", self.vals);
           self.render();
           _wvfs.draw();
 
@@ -3295,8 +3297,9 @@ var mg = (function () {
     }
 
     /**
-     * constructor description
-     * @constructor
+     * Gets and returns summary of amplitude values in the waveform, which can be
+     * stored in a graphics buffer to avoid unncessary recalculation when
+     * rendering the interface.
      * @param {Object} buff The audio buffer from which we can extract (typically)
      * the RMS, providing a summary of amplitude values in the waveform.
      * @return {Array} An array of pairs: the first element of each pair is the
@@ -3312,8 +3315,9 @@ var mg = (function () {
         return chData
       }
       else {
+
         // Boxing/summary required.
-        const idxSpacing = Math.round(this.fs*boxDuration);
+        const idxSpacing = Math.round(this.fs*this.secPerBox);
         const boxesToDraw = new Array(
           Math.ceil(this.nosSamples/idxSpacing)
         );
@@ -3339,8 +3343,8 @@ var mg = (function () {
 
 
     move(){
-      this.x = mouseX - this.dragOffset.x;
-      this.y = mouseY - this.dragOffset.y;
+      this.x = this.sk.mouseX - this.dragOffset.x;
+      this.y = this.sk.mouseY - this.dragOffset.y;
     }
 
 
@@ -3350,7 +3354,7 @@ var mg = (function () {
       const y = self.y;
       const w = self.w;
       const h = self.h;
-      // console.log("[x, y, w, h]:", [x, y, w, h])
+      console.log("[x, y, w, h]:", [x, y, w, h]);
 
       // Save to a graphics buffer for ease of use with playback.
       self.graphicsBuffer = self.sk.createGraphics(w, h);
@@ -3394,6 +3398,7 @@ var mg = (function () {
           }
         });
       }
+      console.log("GOT HERE!");
 
       // self.graphicsBuffer.copy(
       //   // source
@@ -3407,14 +3412,14 @@ var mg = (function () {
 
 
     touch_check(){
-      if (mouseX >= this.x &&
-        mouseX < this.x + this.w &&
-        mouseY >= this.y &&
-        mouseY < this.y + this.h
+      if (this.sk.mouseX >= this.x &&
+        this.sk.mouseX < this.x + this.w &&
+        this.sk.mouseY >= this.y &&
+        this.sk.mouseY < this.y + this.h
       ){
         this.dragOffset = {
-          "x": mouseX - this.x,
-          "y": mouseY - this.y
+          "x": this.sk.mouseX - this.x,
+          "y": this.sk.mouseY - this.y
         };
         this.moving = true;
         return true
@@ -3424,7 +3429,7 @@ var mg = (function () {
 
     touch_end(_x, _w){
       this.player.unsync();
-      const startTime = map(
+      const startTime = this.sk.map(
         this.x, _x, _x + _w,
         screenLRepresents, screenLRepresents + screenWRepresents
       );
@@ -3440,62 +3445,65 @@ var mg = (function () {
   }
 
   class Waveforms {
-    constructor(_sketch, _x, _y, _w, _h){
+    constructor(_sketch, _x, _y, _w, _h, _xInSec, _wInSec){
       this.sk = _sketch;
       this.x = _x;
       this.y = _y;
       this.w = _w;
       this.h = _h;
+      this.xInSec = _xInSec;
+      this.wInSec = _wInSec;
 
       this.arr = [];
       this.movingIdx = -1;
     }
 
 
-    add_waveform(_url, _x, _y){
+    add_waveform(_url, _x, _y, _rectH, _secPerBox){
       this.arr.push(
-        new Waveform(_sketch, _url, _x, _y, this)
+        new Waveform(this.sk, _url, _x, _y, _rectH, _secPerBox, this)
       );
     }
 
 
     draw(){
-      this.sk.background(220);
+      const self = this;
+      self.sk.background(220);
       // Outer rectangle
-      this.sk.push();
-      this.sk.noFill();
-      this.sk.stroke(100, 100, 130);
-      this.sk.strokeWeight(6);
-      this.sk.rect(this.x - 3, this.y - 3, this.w + 6, this.h + 6, 5);
-      this.sk.pop();
+      self.sk.push();
+      self.sk.noFill();
+      self.sk.stroke(100, 100, 130);
+      self.sk.strokeWeight(6);
+      self.sk.rect(self.x - 3, self.y - 3, self.w + 6, self.h + 6, 5);
+      self.sk.pop();
 
       // Waveforms
-      this.sk.push();
-      this.sk.fill(220); this.sk.noStroke();
-      this.sk.rect(this.x, this.y, this.w, this.h);
-      this.sk.drawingContext.clip();
-      this.arr.forEach(function(wf){
+      self.sk.push();
+      self.sk.fill(220); self.sk.noStroke();
+      self.sk.rect(self.x, self.y, self.w, self.h);
+      self.sk.drawingContext.clip();
+      self.arr.forEach(function(wf){
         if (wf.graphicsBuffer){
           wf.draw();
         }
       });
-      this.sk.pop();
+      self.sk.pop();
 
       // Playhead
       if (
-        Tone.Transport.seconds >= screenLRepresents &&
-        Tone.Transport.seconds < screenLRepresents + screenWRepresents
+        Tone.Transport.seconds >= self.xInSec &&
+        Tone.Transport.seconds < self.xInSec + self.wInSec
       ){
-        this.sk.stroke(100, 100, 130);
-        const x = this.sk.map(
+        self.sk.stroke(100, 100, 130);
+        const x = self.sk.map(
           Tone.Transport.seconds,
-          screenLRepresents,
-          screenLRepresents + screenWRepresents,
-          this.x,
-          this.x + this.w
+          self.xInSec,
+          self.xInSec + self.wInSec,
+          self.x,
+          self.x + self.w
         );
-        this.sk.line(
-          x, this.y, x, this.y + this.h
+        self.sk.line(
+          x, self.y, x, self.y + self.h
         );
       }
     }
@@ -3536,6 +3544,31 @@ var mg = (function () {
     }
   }
 
+  class TextInput {
+    constructor(
+      _sketch, _inputPlaceholder, _inputX, _inputY, _inputW, _btnText, _btnX, _btnY
+    ){
+      // this.sk = _sketch,
+      this.input = _sketch.createInput(_inputPlaceholder);
+      this.input.position(_inputX, _inputY);
+      this.input.size(_inputW);
+      this.subBtn = _sketch.createButton(_btnText);
+      this.subBtn.position(_btnX, _btnY);
+      this.subBtn.mousePressed(this.mouse_pressed.bind(this));
+    }
+
+
+    mouse_pressed(wavfs){
+      try {
+        // console.log("this:", this)
+        wavfs.add_waveform(this.input.elt.value, 30, 100, rectH, secPerBox, wavfs);
+      }
+      catch (error){
+        console.error(error);
+      }
+    }
+  }
+
   /**
    * @file Welcome to the API for MAIA GUI!
    *
@@ -3555,43 +3588,45 @@ var mg = (function () {
   // } from './util_key'
 
 
-  const Button$1 = Button;
-  const Buttons$2 = Buttons$1;
-  const EditButtons$1 = EditButtons;
-  const TransportButtons$1 = TransportButtons;
-  const GranularityButtons$1 = GranularityButtons;
-  const NavigationButtons$1 = NavigationButtons;
-  const EnvelopeButtons$1 = EnvelopeButtons;
-  const Cell$2 = Cell$1;
-  const Envelope$1 = Envelope;
-  const EnvelopeNode$2 = EnvelopeNode$1;
-  const Oblong$2 = Oblong$1;
-  const Help$1 = Help;
-  const Dial$2 = Dial$1;
-  const Grid$1 = Grid;
-  const PlayWheel$1 = PlayWheel;
-  const Waveform$2 = Waveform$1;
-  const Waveforms$1 = Waveforms;
+  // const Button = Button;
+  // const Buttons = Buttons;
+  // const EditButtons = EditButtons;
+  // const TransportButtons = TransportButtons;
+  // const GranularityButtons = GranularityButtons;
+  // const NavigationButtons = NavigationButtons;
+  // const EnvelopeButtons = EnvelopeButtons;
+  // const Cell = Cell;
+  // const Envelope = Envelope;
+  // const EnvelopeNode = EnvelopeNode;
+  // const Oblong = Oblong;
+  // const Help = Help;
+  // const Dial = Dial;
+  // const Grid = Grid;
+  // const PlayWheel = PlayWheel;
+  // const Waveform = Waveform;
+  // const Waveforms = Waveforms;
+  // const TextInput = TextInput;
 
 
   var maiaGui = {
-    Button: Button$1,
-    Buttons: Buttons$2,
-    EditButtons: EditButtons$1,
-    TransportButtons: TransportButtons$1,
-    GranularityButtons: GranularityButtons$1,
-    NavigationButtons: NavigationButtons$1,
-    EnvelopeButtons: EnvelopeButtons$1,
-    Cell: Cell$2,
-    Envelope: Envelope$1,
-    EnvelopeNode: EnvelopeNode$2,
-    Oblong: Oblong$2,
-    Help: Help$1,
-    Dial: Dial$2,
-    Grid: Grid$1,
-    PlayWheel: PlayWheel$1,
-    Waveform: Waveform$2,
-    Waveforms: Waveforms$1
+    Button: Button,
+    Buttons: Buttons,
+    EditButtons: EditButtons,
+    TransportButtons: TransportButtons,
+    GranularityButtons: GranularityButtons,
+    NavigationButtons: NavigationButtons,
+    EnvelopeButtons: EnvelopeButtons,
+    Cell: Cell,
+    Envelope: Envelope,
+    EnvelopeNode: EnvelopeNode,
+    Oblong: Oblong,
+    Help: Help,
+    Dial: Dial,
+    Grid: Grid,
+    PlayWheel: PlayWheel,
+    Waveform: Waveform,
+    Waveforms: Waveforms,
+    TextInput: TextInput
 
   };
 

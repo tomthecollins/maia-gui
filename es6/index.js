@@ -28,6 +28,7 @@ import Grid_default from './Grid'
 import PlayWheel_default from './PlayWheel'
 import Waveform_default from './Waveform'
 import Waveforms_default from './Waveforms'
+import TextInput_default from './TextInput'
 // import {
 //   fifth_steps_mode as fifth_steps_mode_default,
 //   aarden_key_profiles as aarden_key_profiles_default,
@@ -52,6 +53,7 @@ export const Grid = Grid_default
 export const PlayWheel = PlayWheel_default
 export const Waveform = Waveform_default
 export const Waveforms = Waveforms_default
+export const TextInput = TextInput_default
 
 
 export default {
@@ -71,6 +73,7 @@ export default {
   Grid,
   PlayWheel,
   Waveform,
-  Waveforms
+  Waveforms,
+  TextInput
 
 }

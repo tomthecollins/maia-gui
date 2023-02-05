@@ -1,4 +1,4 @@
-export default class GranularityButtons extends Buttons {
+class GranularityButtons extends Buttons {
   constructor(_sketch, _buttonsStruct, _containerDimensions){
     super(_sketch, _buttonsStruct, _containerDimensions)
     // Any extra properties/actions here, which could have been
@@ -46,3 +46,4 @@ export default class GranularityButtons extends Buttons {
   }
 
 }
+export default GranularityButtons
