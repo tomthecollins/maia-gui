@@ -1,4 +1,17 @@
-export default class Waveform {
+/**
+* The Waveform class makes a draggable rectangle representing the waveform of an
+* audio file, which can be moved around the interior of a larger rectangle
+* instantiated by the {@link Waveforms} class.
+* @class Waveform
+*/
+
+class Waveform {
+
+  /**
+   * Constructor for making a new instance of the Waveform class.
+   * @param {Object} _sketch The p5 sketch in which one or more instances of the
+   * Waveform class will exist.
+   */
   constructor(_sketch, _url, _x, _y, _wvfs){
     this.sk = _sketch
     this.x = _x
@@ -61,7 +74,16 @@ export default class Waveform {
     image(this.graphicsBuffer, this.x, this.y)
   }
 
-
+  /**
+   * Gets and returns summary of amplitude values in the waveform, which can be
+   * stored in a graphics buffer to avoid unncessary recalculation when
+   * rendering the interface.
+   * @param {Object} buff The audio buffer from which we can extract (typically)
+   * the RMS, providing a summary of amplitude values in the waveform.
+   * @return {Array} An array of pairs: the first element of each pair is the
+   * proprtion through the waveform; the second element is (typically) the RMS
+   * associated with the corresponding time window of the waveform.
+   */
   get_wav_summary(buff){
     let chData = Array.from(buff.getChannelData(0))
     // console.log(chData.length)
@@ -197,3 +219,4 @@ export default class Waveform {
     this.moving = false
   }
 }
+export default Waveform

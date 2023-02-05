@@ -1,19 +1,45 @@
-export default class Envelope {
+/**
+* The Envelope class makes a rectangular space in which instances of the
+* {@link EnvelopeNode} can be created, edited, and deleted.
+* @class Envelope
+*/
+
+class Envelope {
+
+  /**
+   * Constructor for making a new instance of the Envelope class.
+   * @param {Object} _sketch The p5 sketch in which one or more instances of the
+   * Envelope class will exist.
+   * @param {String} _name Unused at present, but a potentially useful label for
+   * distinguishing between multiple envelopes.
+   * @param {Number} _yVal In [0, 1], giving the initial/default value of nodes
+   * inside the envelope.
+   * @param {Boolean} _active Unused at present, but potentially useful for
+   * switching between envelopes that are applied to different channels or staff
+   * numbers.
+   * @param {Number} _x `x`-location of top-left corner of the envelope in
+   * pixels.
+   * @param {Number} _y `y`-location of top-left corner of the envelope in
+   * pixels.
+   * @param {Number} _width Width of the envelope in pixels.
+   * @param {Number} _height Height of the envelope in pixels.
+   * @param {Number} _nodeDiameter Diameter of the nodes appearing inside the
+   * envelope.
+   */
   constructor(
-    theSketch, theName, theYVal, theActive, theX, theY, theWidth, theHeight,
-    theNodeDiameter
+    _sketch, _name, _yVal, _active, _x, _y, _width, _height, _nodeDiameter
   ){
     // Workaround for JS context peculiarities
     // const self = this
-    this.sk = theSketch
-    this.name = theName
-    this.active = theActive
-    this.x = theX
-    this.y = theY
-    this.w = theWidth
-    this.h = theHeight
+    this.sk = _sketch
+    this.name = _name
+    this.active = _active
+    this.x = _x
+    this.y = _y
+    this.w = _width
+    this.h = _height
     this.inner = { "x": this.x, "y": this.y, "width": this.w, "height": this.h }
-    this.nodeDiameter = theNodeDiameter
+    this.nodeDiameter = _nodeDiameter
     this.nodeFill = this.sk.color("#17baef")
     this.lineFill = this.sk.color("#17baef")
     this.aboveLineFill = this.sk.color("#074f66")
@@ -24,7 +50,7 @@ export default class Envelope {
 
     // Making nodes.
     this.nodeId = 2 // Unique id for each node.
-    if (theYVal == undefined){
+    if (_yVal == undefined){
       this.nodes = [
         new EnvelopeNode(
           this.sk, 0, null, 0.1, 0.5, false, this.nodeFill, this.nodeDiameter, this.inner
@@ -37,11 +63,11 @@ export default class Envelope {
     else {
       this.nodes = [
         new EnvelopeNode(
-          this.sk, 0, null, 0.1, theYVal, false, this.nodeFill, this.nodeDiameter,
+          this.sk, 0, null, 0.1, _yVal, false, this.nodeFill, this.nodeDiameter,
           this.inner
         ),
         new EnvelopeNode(
-          this.sk, 1, null, 0.9, theYVal, false, this.nodeFill, this.nodeDiameter,
+          this.sk, 1, null, 0.9, _yVal, false, this.nodeFill, this.nodeDiameter,
           this.inner
         )
       ]
@@ -50,7 +76,12 @@ export default class Envelope {
     // return sth
   }
 
-
+  /**
+   * Draws the instance of the Envelope class. This includes the outer
+   * rectangle, the lines between each envelope node, and the nodes themselves.
+   * @param {Number} newX An altered value of the envelope's `x`-location
+   * (useful if the screen has been resized I think).
+   */
   draw(newX){
     if (!this.active){
       console.log("Shouldn't be drawn. Is not active!")
@@ -699,7 +730,7 @@ export default class Envelope {
   }
 
 
-  onclick(str, theGrid, theSound){
+  onclick(str, _grid, _sonic){
     // if (prm.printConsoleLogs) { console.log("Envelope \"" + this.name + "\" has been clicked!") }
     const xLoc = (this.sk.mouseX - this.inner.x - this.nodeDiameter/2)/(this.inner.width - this.nodeDiameter)
     const yLoc = 1 - (this.sk.mouseY - this.inner.y - this.nodeDiameter/2)/(this.inner.height - this.nodeDiameter)
@@ -709,7 +740,7 @@ export default class Envelope {
     let nidx = 0
     while (nidx < this.nodes.length && !nodeClick){
       nodeClick = this.nodes[nidx].touch_check(
-        str, this, nidx, theGrid, theSound
+        str, this, nidx, _grid, _sonic
       )
       nidx++
     }
@@ -720,7 +751,7 @@ export default class Envelope {
       // if (prm.printConsoleLogs) { console.log("nidx:", nidx) }
       // A touch has started on an existing node. The node needs to move with
       // the touch.
-      this.nodes[nidx].move("touchStarted", this, nidx, theGrid, theSound)
+      this.nodes[nidx].move("touchStarted", this, nidx, _grid, _sonic)
       // Delete and create.
     }
     else {
@@ -876,7 +907,7 @@ export default class Envelope {
       // if (prm.printConsoleLogs) { console.log("this.nodes:", this.nodes) }
       this.nodeId++
       this.draw()
-      theSound.schedule_events(compObj, prodObj, theGrid)
+      _sonic.schedule_events(compObj, prodObj, _grid)
     }
   }
 
@@ -905,7 +936,7 @@ export default class Envelope {
   }
 
 
-  touch_check(touchType, str, theGrid, theSound){
+  touch_check(touchType, str, _grid, _sonic){
     // Check if a select menu is showing or the touch is outside the envelope
     // area.
     if (
@@ -927,17 +958,17 @@ export default class Envelope {
 
     switch (touchType){
       case "touchStarted":
-      this.onclick(str, theGrid, theSound)
+      this.onclick(str, _grid, _sonic)
       break
       case "touchMoved":
       if (nodeIdx !== undefined){
         // Move node, taking into account location of left- and right-hand nodes.
-        this.nodes[nodeIdx].move(touchType, this, nodeIdx, theGrid, theSound)
+        this.nodes[nodeIdx].move(touchType, this, nodeIdx, _grid, _sonic)
       }
       break
       case "touchEnded":
       if (nodeIdx !== undefined){
-        this.nodes[nodeIdx].move(touchType, this, nodeIdx, theGrid, theSound)
+        this.nodes[nodeIdx].move(touchType, this, nodeIdx, _grid, _sonic)
       }
       break
       default:
@@ -946,3 +977,4 @@ export default class Envelope {
   }
 
 }
+export default Envelope

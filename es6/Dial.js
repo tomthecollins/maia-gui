@@ -1,4 +1,10 @@
-export default class Dial {
+/**
+* The Dial class makes a circular interactive element that can be turned up or
+* down by moving a marker round.
+* @class Dial
+*/
+
+class Dial {
   constructor(_sketch, _id, _x, _y, _radius, _min = 0, _max = 1, _val = 0.5, _step = null){
     this.sk = _sketch
     this.id = _id
@@ -167,3 +173,4 @@ export default class Dial {
     ) <= this.radius
   }
 }
+export default Dial

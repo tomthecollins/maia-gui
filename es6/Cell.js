@@ -1,6 +1,15 @@
 // import mu from "maia-util"
 
-export default class Cell {
+/**
+* The Cell class makes small (rounded) rectangles that live inside an instance
+* of the {@link Grid} class. They can be informational (members of the top-,
+* bottom-, left-, or right-most rows/columns of the grid, acting as time or
+* pitch labels), or they can  be members of the inner grid, where musical events
+* may be represented.
+* @class Cell
+*/
+
+class Cell {
   constructor(
     theSketch, theCheckTint, theRowNo, theColNo, theNosRow, theNosCol,
     theGridX, theGridY, theGridWidth, theGridHeight
@@ -125,3 +134,4 @@ export default class Cell {
     }
   }
 }
+export default Cell

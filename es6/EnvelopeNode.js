@@ -1,4 +1,19 @@
-export default class EnvelopeNode {
+/**
+* The EnvelopeNode class makes small draggable nodes or circles in a
+* rectangular space that we refer to as an Envelope. Lines are drawn from one
+* instance of EnvelopeNode to the next, and so can be used to determine or
+* shape the profile or production of some aspect of musical events, such as
+* their volume.
+* @class EnvelopeNode
+*/
+
+class EnvelopeNode {
+
+  /**
+   * constructor description
+   * @constructor
+   * @param {Number} config [description]
+   */
   constructor(
     theSketch, theId, theCtx, theX, theY, theBeingMoved, theFillColor, theDiameter,
     theInner
@@ -16,8 +31,16 @@ export default class EnvelopeNode {
     this.fillColor = theFillColor
     this.diameter = theDiameter
     this.inner = theInner
-    this.pixelX = theInner.x + this.diameter/2 + (theInner.width - this.diameter)*this.x
-    this.pixelY = theInner.y + this.diameter/2 + (theInner.height - this.diameter)*(1 - this.y)
+    this.pixelX = this.sk.map(
+      this.x, 0, 1, theInner.x + this.diameter/2,
+      theInner.x + theInner.width - this.diameter/2
+    )
+    // this.pixelX = theInner.x + this.diameter/2 + (theInner.width - this.diameter)*this.x
+    this.pixelY = this.sk.map(
+      this.y, 0, 1, theInner.y + theInner.height - this.diameter,
+      theInner.y + this.diameter/2
+    )
+    // this.pixelY = theInner.y + this.diameter/2 + (theInner.height - this.diameter)*(1 - this.y)
     this.pPixelX = null
     this.pPixelY = null
 
@@ -25,11 +48,12 @@ export default class EnvelopeNode {
     // return sth
   }
 
-  // This method returns:
-  // * -1 if the node represented by "this" is lexicographically less than the
-  //   node represented by "aNode" (that is this.x < aNode.x);
-  // * 0 if "this" and "aNode" have exactly the same x- and y-values;
-  // * +1 otherwise.
+  /**
+   * compare_to is the best!
+   * @param  {Object} fruit      [description]
+   * @param  {String} fruit.name [description]
+   * @return {String}            [description]
+   */
   compare_to(aNode){
     if (this.x < aNode.x){
       return -1
@@ -60,12 +84,24 @@ export default class EnvelopeNode {
   }
 
 
-  move(touchType, theEnv, theNodeIdx, theGrid, theSound){
-    let self = this
+  move(touchType, theEnv, theNodeIdx, theGrid, theSonic){
+    const self = this
+
+    // if (
+    //   self.sk.mouseX > self.inner.x + self.diameter/2 &&
+    //   self.sk.mouseX < self.inner.x + self.inner.width - self.diameter/2 &&
+    //   self.sk.mouseY > self.inner.y + self.diameter/2 &&
+    //   self.sk.mouseY < self.inner.y + self.inner.height - self.diameter/2
+    // ){
+    //   console.log("Meh")
+    // }
+
     // if (touchType == "touchMoved" || touchType == "touchEnded"){
       if (
-        this.sk.mouseX < self.inner.x || this.sk.mouseX > self.inner.x + self.inner.width ||
-        this.sk.mouseY < self.inner.y || this.sk.mouseY > self.inner.y + self.inner.height
+        self.sk.mouseX < self.inner.x + self.diameter/2 ||
+        self.sk.mouseX > self.inner.x + self.inner.width - self.diameter/2 ||
+        self.sk.mouseY < self.inner.y + self.diameter/2 ||
+        self.sk.mouseY > self.inner.y + self.inner.height - self.diameter/2
       ){
         return;
       }
@@ -73,8 +109,8 @@ export default class EnvelopeNode {
       if (touchType == "touchStarted"){
         // Store previous node location, so we can decide on touch ending
         // whether it's an attempt to delete the node.
-        this.pPixelX = this.pixelX
-        this.pPixelY = this.pixelY
+        self.pPixelX = self.pixelX
+        self.pPixelY = self.pixelY
       }
       else if (touchType == "touchMoved"){
         // We may need to move the oblong node.
@@ -83,26 +119,38 @@ export default class EnvelopeNode {
         let nodeL = theEnv.nodes[theNodeIdx - 1]
         let nodeR = theEnv.nodes[theNodeIdx + 1]
         if (nodeL !== undefined && nodeR !== undefined){
-          const behindOrBeyond = this.sk.mouseX < nodeL.pixelX || this.sk.mouseX > nodeR.pixelX
+          const behindOrBeyond = self.sk.mouseX < nodeL.pixelX || self.sk.mouseX > nodeR.pixelX
           // if (prm.printConsoleLogs) { console.log("behindOrBeyond:", behindOrBeyond) }
           if (!behindOrBeyond){
-            this.pixelX = this.sk.mouseX
-            this.pixelY = this.sk.mouseY
-            this.x = (this.pixelX - self.inner.x - this.diameter/2)/(self.inner.width - this.diameter)
-            this.y = 1 - (this.pixelY - self.inner.y - this.diameter/2)/(self.inner.height - this.diameter)
+            self.pixelX = self.sk.mouseX
+            self.pixelY = self.sk.mouseY
+            self.x = self.sk.map(
+              self.pixelX, self.inner.x + self.diameter/2,
+              self.inner.x + self.inner.width - self.diameter, 0, 1
+            )
+            // self.x = (self.pixelX - self.inner.x - self.diameter/2)/(self.inner.width - self.diameter)
+            self.y = self.sk.map(
+              self.pixelY, self.inner.y + self.diameter/2,
+              self.inner.y + self.inner.height - self.diameter, 1, 0
+            )
+            // self.y = 1 - (self.pixelY - self.inner.y - self.diameter/2)/(self.inner.height - self.diameter)
           }
         }
         else {
           // Prevent moves in x-plane of outermost nodes.
-          this.pixelY = this.sk.mouseY
-          this.y = 1 - (this.pixelY - self.inner.y - this.diameter/2)/(self.inner.height - this.diameter)
+          self.pixelY = self.sk.mouseY
+          self.y = self.sk.map(
+            self.pixelY, self.inner.y + self.diameter/2,
+            self.inner.y + self.inner.height - self.diameter, 1, 0
+          )
+          // self.y = 1 - (self.pixelY - self.inner.y - self.diameter/2)/(self.inner.height - self.diameter)
         }
         theEnv.draw()
       }
       else if (touchType == "touchEnded"){
-        // if (prm.printConsoleLogs) { console.log("Pixel positions:", this.pixelX, this.pixelY, this.pPixelX, this.pPixelY) }
+        // if (prm.printConsoleLogs) { console.log("Pixel positions:", self.pixelX, self.pixelY, self.pPixelX, self.pPixelY) }
         // Is this an attempt to delete the node?
-        if (this.sk.dist(this.pixelX, this.pixelY, this.pPixelX, this.pPixelY) < 5){
+        if (self.sk.dist(self.pixelX, self.pixelY, self.pPixelX, self.pPixelY) < 5){
           // console.log("GOT HERE!")
           // Prevent deletion of outermost nodes.
           let nodeL = theEnv.nodes[theNodeIdx - 1]
@@ -111,39 +159,39 @@ export default class EnvelopeNode {
             // Communicate delete to the underlying data model here.
             let relIdx
             // if (prm.printConsoleLogs){
-            //   console.log(this.ctx.object + ", " + this.ctx.property)
+            //   console.log(self.ctx.object + ", " + self.ctx.property)
             // }
-            switch (this.ctx.object){
+            switch (self.ctx.object){
               case "compObj":
-              // console.log("this.ctx.property:", this.ctx.property)
-              relIdx = compObj[this.ctx.property].findIndex(function(thing){
+              // console.log("self.ctx.property:", self.ctx.property)
+              relIdx = compObj[self.ctx.property].findIndex(function(thing){
                 // console.log("thing:", thing)
                 return thing.id == self.ctx.id
               })
               if (relIdx >= 0){
-                compObj[this.ctx.property][relIdx].stampDelete = Date.now()
+                compObj[self.ctx.property][relIdx].stampDelete = Date.now()
               }
               else {
                 console.log("relIdx = " + relIdx + " BUT REALLY OUGHT TO HAVE FOUND SOMETHING HERE...")
               }
               break
               case "prodObj":
-              // console.log("this.ctx.property:", this.ctx.property)
-              if ((typeof this.ctx.property) == "string"){
-                relIdx = prodObj[this.ctx.property].findIndex(function(thing){
+              // console.log("self.ctx.property:", self.ctx.property)
+              if ((typeof self.ctx.property) == "string"){
+                relIdx = prodObj[self.ctx.property].findIndex(function(thing){
                   // console.log("thing:", thing)
                   return thing.id == self.ctx.id
                 })
                 if (relIdx >= 0){
-                  prodObj[this.ctx.property][relIdx].stampDelete = Date.now()
+                  prodObj[self.ctx.property][relIdx].stampDelete = Date.now()
                 }
               }
-              else if (this.ctx.property.length == 2){
-                relIdx = prodObj[this.ctx.property[0]][this.ctx.property[1]].findIndex(function(thing){
+              else if (self.ctx.property.length == 2){
+                relIdx = prodObj[self.ctx.property[0]][self.ctx.property[1]].findIndex(function(thing){
                   return thing.id == self.ctx.id
                 })
                 if (relIdx >= 0){
-                  prodObj[this.ctx.property[0]][this.ctx.property[1]][relIdx].stampDelete = Date.now()
+                  prodObj[self.ctx.property[0]][self.ctx.property[1]][relIdx].stampDelete = Date.now()
                 }
               }
               else {
@@ -158,32 +206,32 @@ export default class EnvelopeNode {
           }
           else {
             // Dealing with an outernmost node.
-            this.toggle_being_moved()
+            self.toggle_being_moved()
             // Not going to change compObj.
           }
         }
         else {
           // console.log("GOT HERE EVEN FOR A TOUCHSTARTED!")
           // console.log("touchType:", touchType)
-          this.toggle_being_moved()
+          self.toggle_being_moved()
           // Communicate edit to the underlying data model here.
           let relIdx
           // if (prm.printConsoleLogs){
             console.log("this:", this)
           // }
-          switch (this.ctx.object + "_" + this.ctx.property){
+          switch (self.ctx.object + "_" + self.ctx.property){
             case "compObj_tempi":
-            relIdx = compObj[this.ctx.property].findIndex(function(thing){
+            relIdx = compObj[self.ctx.property].findIndex(function(thing){
               // console.log("thing:", thing)
               return thing.id == self.ctx.id
             })
             console.log("relIdx from inside an EnvelopeNode move:", relIdx)
             if (relIdx >= 0){
-              console.log("this.ctx:", this.ctx)
-              const currTempoObj = compObj[this.ctx.property][relIdx]
+              console.log("self.ctx:", self.ctx)
+              const currTempoObj = compObj[self.ctx.property][relIdx]
               console.log("currTempoObj:", currTempoObj)
-              const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x
-              const bpm = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y
+              const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x
+              const bpm = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y
               console.log("bpm:", bpm)
               // Are these sufficiently different?
               if (
@@ -195,16 +243,16 @@ export default class EnvelopeNode {
                 currTempoObj.stampDelete = Date.now()
                 // Handle creation of new tempi object.
                 const id = uuid()
-                const idEditOf = this.ctx.id
+                const idEditOf = self.ctx.id
                 const bb = mu.bar_and_beat_number_of_ontime(
                   ontime, compObj.timeSignatures
                 )
-                ctx = {
+                const ctx = {
                   "object": "compObj",
                   "property": "tempi",
                   "id": id,
-                  "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                  "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                  "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                  "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                 }
                 compObj.tempi.push({
                   "id": id,
@@ -218,7 +266,7 @@ export default class EnvelopeNode {
                 compObj.tempi = compObj.tempi.sort(function(a, b){ return a.ontime - b.ontime })
                 // Transfer context.
                 // console.log("ctx:", ctx)
-                this.ctx = ctx
+                self.ctx = ctx
               }
             }
             else {
@@ -226,14 +274,14 @@ export default class EnvelopeNode {
             }
             break
             case "prodObj_volume":
-            relIdx = prodObj[this.ctx.property].findIndex(function(thing){
+            relIdx = prodObj[self.ctx.property].findIndex(function(thing){
               // console.log("thing:", thing)
               return thing.id == self.ctx.id
             })
             if (relIdx >= 0){
-              const currProdObj = prodObj[this.ctx.property][relIdx]
-              const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x
-              const val = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y
+              const currProdObj = prodObj[self.ctx.property][relIdx]
+              const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x
+              const val = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y
               // Are these sufficiently different?
               if (
                 Math.abs(ontime - currProdObj.ontime) > 0.01 ||
@@ -243,16 +291,16 @@ export default class EnvelopeNode {
                 currProdObj.stampDelete = Date.now()
                 // Handle creation of new tempi object.
                 const id = uuid()
-                const idEditOf = this.ctx.id
+                const idEditOf = self.ctx.id
                 const bb = mu.bar_and_beat_number_of_ontime(
                   ontime, compObj.timeSignatures
                 )
-                ctx = {
+                const ctx = {
                   "object": "prodObj",
                   "property": "volume",
                   "id": id,
-                  "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                  "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                  "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                  "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                 }
                 prodObj.volume.push({
                   "id": id,
@@ -268,7 +316,7 @@ export default class EnvelopeNode {
                 prodObj.volume = prodObj.volume.sort(function(a, b){ return a.ontime - b.ontime })
                 // Transfer context.
                 // console.log("ctx:", ctx)
-                this.ctx = ctx
+                self.ctx = ctx
               }
             }
             else {
@@ -276,14 +324,14 @@ export default class EnvelopeNode {
             }
             break
             case "prodObj_pan":
-            relIdx = prodObj[this.ctx.property].findIndex(function(thing){
+            relIdx = prodObj[self.ctx.property].findIndex(function(thing){
               // console.log("thing:", thing)
               return thing.id == self.ctx.id
             })
             if (relIdx >= 0){
-              const currProdObj = prodObj[this.ctx.property][relIdx]
-              const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x
-              const val = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y
+              const currProdObj = prodObj[self.ctx.property][relIdx]
+              const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x
+              const val = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y
               // Are these sufficiently different?
               if (
                 Math.abs(ontime - currProdObj.ontime) > 0.01 ||
@@ -293,16 +341,16 @@ export default class EnvelopeNode {
                 currProdObj.stampDelete = Date.now()
                 // Handle creation of new pan object.
                 const id = uuid()
-                const idEditOf = this.ctx.id
+                const idEditOf = self.ctx.id
                 const bb = mu.bar_and_beat_number_of_ontime(
                   ontime, compObj.timeSignatures
                 )
-                ctx = {
+                const ctx = {
                   "object": "prodObj",
                   "property": "pan",
                   "id": id,
-                  "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                  "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                  "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                  "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                 }
                 prodObj.pan.push({
                   "id": id,
@@ -318,7 +366,7 @@ export default class EnvelopeNode {
                 prodObj.pan = prodObj.pan.sort(function(a, b){ return a.ontime - b.ontime })
                 // Transfer context.
                 // console.log("ctx:", ctx)
-                this.ctx = ctx
+                self.ctx = ctx
               }
             }
             else {
@@ -326,14 +374,14 @@ export default class EnvelopeNode {
             }
             break
             case "prodObj_reverb,roomSize":
-            relIdx = prodObj[this.ctx.property[0]][this.ctx.property[1]].findIndex(function(thing){
+            relIdx = prodObj[self.ctx.property[0]][self.ctx.property[1]].findIndex(function(thing){
               // console.log("thing:", thing)
               return thing.id == self.ctx.id
             })
             if (relIdx >= 0){
-              const currProdObj = prodObj[this.ctx.property[0]][this.ctx.property[1]][relIdx]
-              const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x
-              const val = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y
+              const currProdObj = prodObj[self.ctx.property[0]][self.ctx.property[1]][relIdx]
+              const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x
+              const val = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y
               // Are these sufficiently different?
               if (
                 Math.abs(ontime - currProdObj.ontime) > 0.01 ||
@@ -343,16 +391,16 @@ export default class EnvelopeNode {
                 currProdObj.stampDelete = Date.now()
                 // Handle creation of new tempi object.
                 const id = uuid()
-                const idEditOf = this.ctx.id
+                const idEditOf = self.ctx.id
                 const bb = mu.bar_and_beat_number_of_ontime(
                   ontime, compObj.timeSignatures
                 )
-                ctx = {
+                const ctx = {
                   "object": "prodObj",
                   "property": ["reverb", "roomSize"],
                   "id": id,
-                  "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                  "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                  "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                  "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                 }
                 prodObj.reverb.roomSize.push({
                   "id": id,
@@ -368,7 +416,7 @@ export default class EnvelopeNode {
                 prodObj.reverb.roomSize = prodObj.reverb.roomSize.sort(function(a, b){ return a.ontime - b.ontime })
                 // Transfer context.
                 // console.log("ctx:", ctx)
-                this.ctx = ctx
+                self.ctx = ctx
               }
             }
             else {
@@ -376,14 +424,14 @@ export default class EnvelopeNode {
             }
             break
             case "prodObj_reverb,wet":
-            relIdx = prodObj[this.ctx.property[0]][this.ctx.property[1]].findIndex(function(thing){
+            relIdx = prodObj[self.ctx.property[0]][self.ctx.property[1]].findIndex(function(thing){
               // console.log("thing:", thing)
               return thing.id == self.ctx.id
             })
             if (relIdx >= 0){
-              const currProdObj = prodObj[this.ctx.property[0]][this.ctx.property[1]][relIdx]
-              const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x
-              const val = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y
+              const currProdObj = prodObj[self.ctx.property[0]][self.ctx.property[1]][relIdx]
+              const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x
+              const val = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y
               // Are these sufficiently different?
               if (
                 Math.abs(ontime - currProdObj.ontime) > 0.01 ||
@@ -393,16 +441,16 @@ export default class EnvelopeNode {
                 currProdObj.stampDelete = Date.now()
                 // Handle creation of new tempi object.
                 const id = uuid()
-                const idEditOf = this.ctx.id
+                const idEditOf = self.ctx.id
                 const bb = mu.bar_and_beat_number_of_ontime(
                   ontime, compObj.timeSignatures
                 )
-                ctx = {
+                const ctx = {
                   "object": "prodObj",
                   "property": ["reverb", "wet"],
                   "id": id,
-                  "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                  "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                  "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                  "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                 }
                 prodObj.reverb.wet.push({
                   "id": id,
@@ -418,7 +466,7 @@ export default class EnvelopeNode {
                 prodObj.reverb.wet = prodObj.reverb.wet.sort(function(a, b){ return a.ontime - b.ontime })
                 // Transfer context.
                 // console.log("ctx:", ctx)
-                this.ctx = ctx
+                self.ctx = ctx
               }
             }
             else {
@@ -430,7 +478,7 @@ export default class EnvelopeNode {
           }
         }
         // console.log("compObj:", compObj)
-        theSound.schedule_events(compObj, prodObj, theGrid)
+        theSonic.schedule_events(compObj, prodObj, theGrid)
       }
       else {
         console.log("Shouldn't get here!")
@@ -455,3 +503,4 @@ export default class EnvelopeNode {
   }
 
 }
+export default EnvelopeNode

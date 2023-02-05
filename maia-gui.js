@@ -96,7 +96,7 @@ var mg = (function () {
 
   }
 
-  class Buttons {
+  class Buttons$1 {
     constructor(_sketch, _buttonsStruct, _containerDimensions){
       this.sk = _sketch;
       this.buttonsStruct = _buttonsStruct;
@@ -235,14 +235,19 @@ var mg = (function () {
         // if (prm.printConsoleLogs) { console.log("self.keys[bidx]:", self.keys[bidx]) }
         switch (self.keys[bidx]){
           case "playPause":
+          console.log("theVisual.trans:", theVisual.trans);
           if (Tone.Transport.state == "started"){
             Tone.Transport.pause();
-            self.buttonsStruct["playPause"].set_image(playImg);
+            self.buttonsStruct["playPause"].set_image(
+              theVisual.trans.img[1][1]
+            );
           }
           else {
             theSound.schedule_events(compObj, prodObj, theGrid);
             Tone.Transport.start();
-            self.buttonsStruct["playPause"].set_image(pauseImg);
+            self.buttonsStruct["playPause"].set_image(
+              theVisual.trans.img[1][0]
+            );
           }
           self.keys.forEach(function(k, idx){
             self.buttonsStruct[k].draw();
@@ -263,7 +268,9 @@ var mg = (function () {
           if (Tone.Transport.state == "started"){
             Tone.Transport.pause();
             self.buttonsStruct["playPause"].toggle_clicked();
-            self.buttonsStruct["playPause"].set_image(playImg);
+            self.buttonsStruct["playPause"].set_image(
+              theVisual.trans.img[1][1]
+            );
           }
           theVisual.draw();
           break
@@ -433,7 +440,16 @@ var mg = (function () {
 
   // import mu from "maia-util"
 
-  class Cell {
+  /**
+  * The Cell class makes small (rounded) rectangles that live inside an instance
+  * of the {@link Grid} class. They can be informational (members of the top-,
+  * bottom-, left-, or right-most rows/columns of the grid, acting as time or
+  * pitch labels), or they can  be members of the inner grid, where musical events
+  * may be represented.
+  * @class Cell
+  */
+
+  class Cell$1 {
     constructor(
       theSketch, theCheckTint, theRowNo, theColNo, theNosRow, theNosCol,
       theGridX, theGridY, theGridWidth, theGridHeight
@@ -559,22 +575,48 @@ var mg = (function () {
     }
   }
 
+  /**
+  * The Envelope class makes a rectangular space in which instances of the
+  * {@link EnvelopeNode} can be created, edited, and deleted.
+  * @class Envelope
+  */
+
   class Envelope {
+
+    /**
+     * Constructor for making a new instance of the Envelope class.
+     * @param {Object} _sketch The p5 sketch in which one or more instances of the
+     * Envelope class will exist.
+     * @param {String} _name Unused at present, but a potentially useful label for
+     * distinguishing between multiple envelopes.
+     * @param {Number} _yVal In [0, 1], giving the initial/default value of nodes
+     * inside the envelope.
+     * @param {Boolean} _active Unused at present, but potentially useful for
+     * switching between envelopes that are applied to different channels or staff
+     * numbers.
+     * @param {Number} _x `x`-location of top-left corner of the envelope in
+     * pixels.
+     * @param {Number} _y `y`-location of top-left corner of the envelope in
+     * pixels.
+     * @param {Number} _width Width of the envelope in pixels.
+     * @param {Number} _height Height of the envelope in pixels.
+     * @param {Number} _nodeDiameter Diameter of the nodes appearing inside the
+     * envelope.
+     */
     constructor(
-      theSketch, theName, theYVal, theActive, theX, theY, theWidth, theHeight,
-      theNodeDiameter
+      _sketch, _name, _yVal, _active, _x, _y, _width, _height, _nodeDiameter
     ){
       // Workaround for JS context peculiarities
       // const self = this
-      this.sk = theSketch;
-      this.name = theName;
-      this.active = theActive;
-      this.x = theX;
-      this.y = theY;
-      this.w = theWidth;
-      this.h = theHeight;
+      this.sk = _sketch;
+      this.name = _name;
+      this.active = _active;
+      this.x = _x;
+      this.y = _y;
+      this.w = _width;
+      this.h = _height;
       this.inner = { "x": this.x, "y": this.y, "width": this.w, "height": this.h };
-      this.nodeDiameter = theNodeDiameter;
+      this.nodeDiameter = _nodeDiameter;
       this.nodeFill = this.sk.color("#17baef");
       this.lineFill = this.sk.color("#17baef");
       this.aboveLineFill = this.sk.color("#074f66");
@@ -585,7 +627,7 @@ var mg = (function () {
 
       // Making nodes.
       this.nodeId = 2; // Unique id for each node.
-      if (theYVal == undefined){
+      if (_yVal == undefined){
         this.nodes = [
           new EnvelopeNode(
             this.sk, 0, null, 0.1, 0.5, false, this.nodeFill, this.nodeDiameter, this.inner
@@ -598,11 +640,11 @@ var mg = (function () {
       else {
         this.nodes = [
           new EnvelopeNode(
-            this.sk, 0, null, 0.1, theYVal, false, this.nodeFill, this.nodeDiameter,
+            this.sk, 0, null, 0.1, _yVal, false, this.nodeFill, this.nodeDiameter,
             this.inner
           ),
           new EnvelopeNode(
-            this.sk, 1, null, 0.9, theYVal, false, this.nodeFill, this.nodeDiameter,
+            this.sk, 1, null, 0.9, _yVal, false, this.nodeFill, this.nodeDiameter,
             this.inner
           )
         ];
@@ -611,7 +653,12 @@ var mg = (function () {
       // return sth
     }
 
-
+    /**
+     * Draws the instance of the Envelope class. This includes the outer
+     * rectangle, the lines between each envelope node, and the nodes themselves.
+     * @param {Number} newX An altered value of the envelope's `x`-location
+     * (useful if the screen has been resized I think).
+     */
     draw(newX){
       if (!this.active){
         console.log("Shouldn't be drawn. Is not active!");
@@ -1260,7 +1307,7 @@ var mg = (function () {
     }
 
 
-    onclick(str, theGrid, theSound){
+    onclick(str, _grid, _sonic){
       // if (prm.printConsoleLogs) { console.log("Envelope \"" + this.name + "\" has been clicked!") }
       const xLoc = (this.sk.mouseX - this.inner.x - this.nodeDiameter/2)/(this.inner.width - this.nodeDiameter);
       const yLoc = 1 - (this.sk.mouseY - this.inner.y - this.nodeDiameter/2)/(this.inner.height - this.nodeDiameter);
@@ -1270,7 +1317,7 @@ var mg = (function () {
       let nidx = 0;
       while (nidx < this.nodes.length && !nodeClick){
         nodeClick = this.nodes[nidx].touch_check(
-          str, this, nidx, theGrid, theSound
+          str, this, nidx, _grid, _sonic
         );
         nidx++;
       }
@@ -1281,7 +1328,7 @@ var mg = (function () {
         // if (prm.printConsoleLogs) { console.log("nidx:", nidx) }
         // A touch has started on an existing node. The node needs to move with
         // the touch.
-        this.nodes[nidx].move("touchStarted", this, nidx, theGrid, theSound);
+        this.nodes[nidx].move("touchStarted", this, nidx, _grid, _sonic);
         // Delete and create.
       }
       else {
@@ -1437,7 +1484,7 @@ var mg = (function () {
         // if (prm.printConsoleLogs) { console.log("this.nodes:", this.nodes) }
         this.nodeId++;
         this.draw();
-        theSound.schedule_events(compObj, prodObj, theGrid);
+        _sonic.schedule_events(compObj, prodObj, _grid);
       }
     }
 
@@ -1466,7 +1513,7 @@ var mg = (function () {
     }
 
 
-    touch_check(touchType, str, theGrid, theSound){
+    touch_check(touchType, str, _grid, _sonic){
       // Check if a select menu is showing or the touch is outside the envelope
       // area.
       if (
@@ -1488,17 +1535,17 @@ var mg = (function () {
 
       switch (touchType){
         case "touchStarted":
-        this.onclick(str, theGrid, theSound);
+        this.onclick(str, _grid, _sonic);
         break
         case "touchMoved":
         if (nodeIdx !== undefined){
           // Move node, taking into account location of left- and right-hand nodes.
-          this.nodes[nodeIdx].move(touchType, this, nodeIdx, theGrid, theSound);
+          this.nodes[nodeIdx].move(touchType, this, nodeIdx, _grid, _sonic);
         }
         break
         case "touchEnded":
         if (nodeIdx !== undefined){
-          this.nodes[nodeIdx].move(touchType, this, nodeIdx, theGrid, theSound);
+          this.nodes[nodeIdx].move(touchType, this, nodeIdx, _grid, _sonic);
         }
         break
         default:
@@ -1508,7 +1555,22 @@ var mg = (function () {
 
   }
 
-  class EnvelopeNode {
+  /**
+  * The EnvelopeNode class makes small draggable nodes or circles in a
+  * rectangular space that we refer to as an Envelope. Lines are drawn from one
+  * instance of EnvelopeNode to the next, and so can be used to determine or
+  * shape the profile or production of some aspect of musical events, such as
+  * their volume.
+  * @class EnvelopeNode
+  */
+
+  class EnvelopeNode$1 {
+
+    /**
+     * constructor description
+     * @constructor
+     * @param {Number} config [description]
+     */
     constructor(
       theSketch, theId, theCtx, theX, theY, theBeingMoved, theFillColor, theDiameter,
       theInner
@@ -1526,8 +1588,16 @@ var mg = (function () {
       this.fillColor = theFillColor;
       this.diameter = theDiameter;
       this.inner = theInner;
-      this.pixelX = theInner.x + this.diameter/2 + (theInner.width - this.diameter)*this.x;
-      this.pixelY = theInner.y + this.diameter/2 + (theInner.height - this.diameter)*(1 - this.y);
+      this.pixelX = this.sk.map(
+        this.x, 0, 1, theInner.x + this.diameter/2,
+        theInner.x + theInner.width - this.diameter/2
+      );
+      // this.pixelX = theInner.x + this.diameter/2 + (theInner.width - this.diameter)*this.x
+      this.pixelY = this.sk.map(
+        this.y, 0, 1, theInner.y + theInner.height - this.diameter,
+        theInner.y + this.diameter/2
+      );
+      // this.pixelY = theInner.y + this.diameter/2 + (theInner.height - this.diameter)*(1 - this.y)
       this.pPixelX = null;
       this.pPixelY = null;
 
@@ -1535,11 +1605,12 @@ var mg = (function () {
       // return sth
     }
 
-    // This method returns:
-    // * -1 if the node represented by "this" is lexicographically less than the
-    //   node represented by "aNode" (that is this.x < aNode.x);
-    // * 0 if "this" and "aNode" have exactly the same x- and y-values;
-    // * +1 otherwise.
+    /**
+     * compare_to is the best!
+     * @param  {Object} fruit      [description]
+     * @param  {String} fruit.name [description]
+     * @return {String}            [description]
+     */
     compare_to(aNode){
       if (this.x < aNode.x){
         return -1
@@ -1570,12 +1641,24 @@ var mg = (function () {
     }
 
 
-    move(touchType, theEnv, theNodeIdx, theGrid, theSound){
-      let self = this;
+    move(touchType, theEnv, theNodeIdx, theGrid, theSonic){
+      const self = this;
+
+      // if (
+      //   self.sk.mouseX > self.inner.x + self.diameter/2 &&
+      //   self.sk.mouseX < self.inner.x + self.inner.width - self.diameter/2 &&
+      //   self.sk.mouseY > self.inner.y + self.diameter/2 &&
+      //   self.sk.mouseY < self.inner.y + self.inner.height - self.diameter/2
+      // ){
+      //   console.log("Meh")
+      // }
+
       // if (touchType == "touchMoved" || touchType == "touchEnded"){
         if (
-          this.sk.mouseX < self.inner.x || this.sk.mouseX > self.inner.x + self.inner.width ||
-          this.sk.mouseY < self.inner.y || this.sk.mouseY > self.inner.y + self.inner.height
+          self.sk.mouseX < self.inner.x + self.diameter/2 ||
+          self.sk.mouseX > self.inner.x + self.inner.width - self.diameter/2 ||
+          self.sk.mouseY < self.inner.y + self.diameter/2 ||
+          self.sk.mouseY > self.inner.y + self.inner.height - self.diameter/2
         ){
           return;
         }
@@ -1583,8 +1666,8 @@ var mg = (function () {
         if (touchType == "touchStarted"){
           // Store previous node location, so we can decide on touch ending
           // whether it's an attempt to delete the node.
-          this.pPixelX = this.pixelX;
-          this.pPixelY = this.pixelY;
+          self.pPixelX = self.pixelX;
+          self.pPixelY = self.pixelY;
         }
         else if (touchType == "touchMoved"){
           // We may need to move the oblong node.
@@ -1593,26 +1676,38 @@ var mg = (function () {
           let nodeL = theEnv.nodes[theNodeIdx - 1];
           let nodeR = theEnv.nodes[theNodeIdx + 1];
           if (nodeL !== undefined && nodeR !== undefined){
-            const behindOrBeyond = this.sk.mouseX < nodeL.pixelX || this.sk.mouseX > nodeR.pixelX;
+            const behindOrBeyond = self.sk.mouseX < nodeL.pixelX || self.sk.mouseX > nodeR.pixelX;
             // if (prm.printConsoleLogs) { console.log("behindOrBeyond:", behindOrBeyond) }
             if (!behindOrBeyond){
-              this.pixelX = this.sk.mouseX;
-              this.pixelY = this.sk.mouseY;
-              this.x = (this.pixelX - self.inner.x - this.diameter/2)/(self.inner.width - this.diameter);
-              this.y = 1 - (this.pixelY - self.inner.y - this.diameter/2)/(self.inner.height - this.diameter);
+              self.pixelX = self.sk.mouseX;
+              self.pixelY = self.sk.mouseY;
+              self.x = self.sk.map(
+                self.pixelX, self.inner.x + self.diameter/2,
+                self.inner.x + self.inner.width - self.diameter, 0, 1
+              );
+              // self.x = (self.pixelX - self.inner.x - self.diameter/2)/(self.inner.width - self.diameter)
+              self.y = self.sk.map(
+                self.pixelY, self.inner.y + self.diameter/2,
+                self.inner.y + self.inner.height - self.diameter, 1, 0
+              );
+              // self.y = 1 - (self.pixelY - self.inner.y - self.diameter/2)/(self.inner.height - self.diameter)
             }
           }
           else {
             // Prevent moves in x-plane of outermost nodes.
-            this.pixelY = this.sk.mouseY;
-            this.y = 1 - (this.pixelY - self.inner.y - this.diameter/2)/(self.inner.height - this.diameter);
+            self.pixelY = self.sk.mouseY;
+            self.y = self.sk.map(
+              self.pixelY, self.inner.y + self.diameter/2,
+              self.inner.y + self.inner.height - self.diameter, 1, 0
+            );
+            // self.y = 1 - (self.pixelY - self.inner.y - self.diameter/2)/(self.inner.height - self.diameter)
           }
           theEnv.draw();
         }
         else if (touchType == "touchEnded"){
-          // if (prm.printConsoleLogs) { console.log("Pixel positions:", this.pixelX, this.pixelY, this.pPixelX, this.pPixelY) }
+          // if (prm.printConsoleLogs) { console.log("Pixel positions:", self.pixelX, self.pixelY, self.pPixelX, self.pPixelY) }
           // Is this an attempt to delete the node?
-          if (this.sk.dist(this.pixelX, this.pixelY, this.pPixelX, this.pPixelY) < 5){
+          if (self.sk.dist(self.pixelX, self.pixelY, self.pPixelX, self.pPixelY) < 5){
             // console.log("GOT HERE!")
             // Prevent deletion of outermost nodes.
             let nodeL = theEnv.nodes[theNodeIdx - 1];
@@ -1621,39 +1716,39 @@ var mg = (function () {
               // Communicate delete to the underlying data model here.
               let relIdx;
               // if (prm.printConsoleLogs){
-              //   console.log(this.ctx.object + ", " + this.ctx.property)
+              //   console.log(self.ctx.object + ", " + self.ctx.property)
               // }
-              switch (this.ctx.object){
+              switch (self.ctx.object){
                 case "compObj":
-                // console.log("this.ctx.property:", this.ctx.property)
-                relIdx = compObj[this.ctx.property].findIndex(function(thing){
+                // console.log("self.ctx.property:", self.ctx.property)
+                relIdx = compObj[self.ctx.property].findIndex(function(thing){
                   // console.log("thing:", thing)
                   return thing.id == self.ctx.id
                 });
                 if (relIdx >= 0){
-                  compObj[this.ctx.property][relIdx].stampDelete = Date.now();
+                  compObj[self.ctx.property][relIdx].stampDelete = Date.now();
                 }
                 else {
                   console.log("relIdx = " + relIdx + " BUT REALLY OUGHT TO HAVE FOUND SOMETHING HERE...");
                 }
                 break
                 case "prodObj":
-                // console.log("this.ctx.property:", this.ctx.property)
-                if ((typeof this.ctx.property) == "string"){
-                  relIdx = prodObj[this.ctx.property].findIndex(function(thing){
+                // console.log("self.ctx.property:", self.ctx.property)
+                if ((typeof self.ctx.property) == "string"){
+                  relIdx = prodObj[self.ctx.property].findIndex(function(thing){
                     // console.log("thing:", thing)
                     return thing.id == self.ctx.id
                   });
                   if (relIdx >= 0){
-                    prodObj[this.ctx.property][relIdx].stampDelete = Date.now();
+                    prodObj[self.ctx.property][relIdx].stampDelete = Date.now();
                   }
                 }
-                else if (this.ctx.property.length == 2){
-                  relIdx = prodObj[this.ctx.property[0]][this.ctx.property[1]].findIndex(function(thing){
+                else if (self.ctx.property.length == 2){
+                  relIdx = prodObj[self.ctx.property[0]][self.ctx.property[1]].findIndex(function(thing){
                     return thing.id == self.ctx.id
                   });
                   if (relIdx >= 0){
-                    prodObj[this.ctx.property[0]][this.ctx.property[1]][relIdx].stampDelete = Date.now();
+                    prodObj[self.ctx.property[0]][self.ctx.property[1]][relIdx].stampDelete = Date.now();
                   }
                 }
                 else {
@@ -1668,32 +1763,32 @@ var mg = (function () {
             }
             else {
               // Dealing with an outernmost node.
-              this.toggle_being_moved();
+              self.toggle_being_moved();
               // Not going to change compObj.
             }
           }
           else {
             // console.log("GOT HERE EVEN FOR A TOUCHSTARTED!")
             // console.log("touchType:", touchType)
-            this.toggle_being_moved();
+            self.toggle_being_moved();
             // Communicate edit to the underlying data model here.
             let relIdx;
             // if (prm.printConsoleLogs){
               console.log("this:", this);
             // }
-            switch (this.ctx.object + "_" + this.ctx.property){
+            switch (self.ctx.object + "_" + self.ctx.property){
               case "compObj_tempi":
-              relIdx = compObj[this.ctx.property].findIndex(function(thing){
+              relIdx = compObj[self.ctx.property].findIndex(function(thing){
                 // console.log("thing:", thing)
                 return thing.id == self.ctx.id
               });
               console.log("relIdx from inside an EnvelopeNode move:", relIdx);
               if (relIdx >= 0){
-                console.log("this.ctx:", this.ctx);
-                const currTempoObj = compObj[this.ctx.property][relIdx];
+                console.log("self.ctx:", self.ctx);
+                const currTempoObj = compObj[self.ctx.property][relIdx];
                 console.log("currTempoObj:", currTempoObj);
-                const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x;
-                const bpm = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y;
+                const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x;
+                const bpm = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y;
                 console.log("bpm:", bpm);
                 // Are these sufficiently different?
                 if (
@@ -1705,16 +1800,16 @@ var mg = (function () {
                   currTempoObj.stampDelete = Date.now();
                   // Handle creation of new tempi object.
                   const id = uuid();
-                  const idEditOf = this.ctx.id;
+                  const idEditOf = self.ctx.id;
                   const bb = mu.bar_and_beat_number_of_ontime(
                     ontime, compObj.timeSignatures
                   );
-                  ctx = {
+                  const ctx = {
                     "object": "compObj",
                     "property": "tempi",
                     "id": id,
-                    "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                    "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                    "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                    "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                   };
                   compObj.tempi.push({
                     "id": id,
@@ -1728,7 +1823,7 @@ var mg = (function () {
                   compObj.tempi = compObj.tempi.sort(function(a, b){ return a.ontime - b.ontime });
                   // Transfer context.
                   // console.log("ctx:", ctx)
-                  this.ctx = ctx;
+                  self.ctx = ctx;
                 }
               }
               else {
@@ -1736,14 +1831,14 @@ var mg = (function () {
               }
               break
               case "prodObj_volume":
-              relIdx = prodObj[this.ctx.property].findIndex(function(thing){
+              relIdx = prodObj[self.ctx.property].findIndex(function(thing){
                 // console.log("thing:", thing)
                 return thing.id == self.ctx.id
               });
               if (relIdx >= 0){
-                const currProdObj = prodObj[this.ctx.property][relIdx];
-                const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x;
-                const val = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y;
+                const currProdObj = prodObj[self.ctx.property][relIdx];
+                const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x;
+                const val = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y;
                 // Are these sufficiently different?
                 if (
                   Math.abs(ontime - currProdObj.ontime) > 0.01 ||
@@ -1753,16 +1848,16 @@ var mg = (function () {
                   currProdObj.stampDelete = Date.now();
                   // Handle creation of new tempi object.
                   const id = uuid();
-                  const idEditOf = this.ctx.id;
+                  const idEditOf = self.ctx.id;
                   const bb = mu.bar_and_beat_number_of_ontime(
                     ontime, compObj.timeSignatures
                   );
-                  ctx = {
+                  const ctx = {
                     "object": "prodObj",
                     "property": "volume",
                     "id": id,
-                    "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                    "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                    "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                    "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                   };
                   prodObj.volume.push({
                     "id": id,
@@ -1778,7 +1873,7 @@ var mg = (function () {
                   prodObj.volume = prodObj.volume.sort(function(a, b){ return a.ontime - b.ontime });
                   // Transfer context.
                   // console.log("ctx:", ctx)
-                  this.ctx = ctx;
+                  self.ctx = ctx;
                 }
               }
               else {
@@ -1786,14 +1881,14 @@ var mg = (function () {
               }
               break
               case "prodObj_pan":
-              relIdx = prodObj[this.ctx.property].findIndex(function(thing){
+              relIdx = prodObj[self.ctx.property].findIndex(function(thing){
                 // console.log("thing:", thing)
                 return thing.id == self.ctx.id
               });
               if (relIdx >= 0){
-                const currProdObj = prodObj[this.ctx.property][relIdx];
-                const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x;
-                const val = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y;
+                const currProdObj = prodObj[self.ctx.property][relIdx];
+                const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x;
+                const val = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y;
                 // Are these sufficiently different?
                 if (
                   Math.abs(ontime - currProdObj.ontime) > 0.01 ||
@@ -1803,16 +1898,16 @@ var mg = (function () {
                   currProdObj.stampDelete = Date.now();
                   // Handle creation of new pan object.
                   const id = uuid();
-                  const idEditOf = this.ctx.id;
+                  const idEditOf = self.ctx.id;
                   const bb = mu.bar_and_beat_number_of_ontime(
                     ontime, compObj.timeSignatures
                   );
-                  ctx = {
+                  const ctx = {
                     "object": "prodObj",
                     "property": "pan",
                     "id": id,
-                    "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                    "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                    "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                    "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                   };
                   prodObj.pan.push({
                     "id": id,
@@ -1828,7 +1923,7 @@ var mg = (function () {
                   prodObj.pan = prodObj.pan.sort(function(a, b){ return a.ontime - b.ontime });
                   // Transfer context.
                   // console.log("ctx:", ctx)
-                  this.ctx = ctx;
+                  self.ctx = ctx;
                 }
               }
               else {
@@ -1836,14 +1931,14 @@ var mg = (function () {
               }
               break
               case "prodObj_reverb,roomSize":
-              relIdx = prodObj[this.ctx.property[0]][this.ctx.property[1]].findIndex(function(thing){
+              relIdx = prodObj[self.ctx.property[0]][self.ctx.property[1]].findIndex(function(thing){
                 // console.log("thing:", thing)
                 return thing.id == self.ctx.id
               });
               if (relIdx >= 0){
-                const currProdObj = prodObj[this.ctx.property[0]][this.ctx.property[1]][relIdx];
-                const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x;
-                const val = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y;
+                const currProdObj = prodObj[self.ctx.property[0]][self.ctx.property[1]][relIdx];
+                const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x;
+                const val = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y;
                 // Are these sufficiently different?
                 if (
                   Math.abs(ontime - currProdObj.ontime) > 0.01 ||
@@ -1853,16 +1948,16 @@ var mg = (function () {
                   currProdObj.stampDelete = Date.now();
                   // Handle creation of new tempi object.
                   const id = uuid();
-                  const idEditOf = this.ctx.id;
+                  const idEditOf = self.ctx.id;
                   const bb = mu.bar_and_beat_number_of_ontime(
                     ontime, compObj.timeSignatures
                   );
-                  ctx = {
+                  const ctx = {
                     "object": "prodObj",
                     "property": ["reverb", "roomSize"],
                     "id": id,
-                    "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                    "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                    "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                    "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                   };
                   prodObj.reverb.roomSize.push({
                     "id": id,
@@ -1878,7 +1973,7 @@ var mg = (function () {
                   prodObj.reverb.roomSize = prodObj.reverb.roomSize.sort(function(a, b){ return a.ontime - b.ontime });
                   // Transfer context.
                   // console.log("ctx:", ctx)
-                  this.ctx = ctx;
+                  self.ctx = ctx;
                 }
               }
               else {
@@ -1886,14 +1981,14 @@ var mg = (function () {
               }
               break
               case "prodObj_reverb,wet":
-              relIdx = prodObj[this.ctx.property[0]][this.ctx.property[1]].findIndex(function(thing){
+              relIdx = prodObj[self.ctx.property[0]][self.ctx.property[1]].findIndex(function(thing){
                 // console.log("thing:", thing)
                 return thing.id == self.ctx.id
               });
               if (relIdx >= 0){
-                const currProdObj = prodObj[this.ctx.property[0]][this.ctx.property[1]][relIdx];
-                const ontime = this.ctx.u.min + (this.ctx.u.max - this.ctx.u.min)*this.x;
-                const val = this.ctx.v.min + (this.ctx.v.max - this.ctx.v.min)*this.y;
+                const currProdObj = prodObj[self.ctx.property[0]][self.ctx.property[1]][relIdx];
+                const ontime = self.ctx.u.min + (self.ctx.u.max - self.ctx.u.min)*self.x;
+                const val = self.ctx.v.min + (self.ctx.v.max - self.ctx.v.min)*self.y;
                 // Are these sufficiently different?
                 if (
                   Math.abs(ontime - currProdObj.ontime) > 0.01 ||
@@ -1903,16 +1998,16 @@ var mg = (function () {
                   currProdObj.stampDelete = Date.now();
                   // Handle creation of new tempi object.
                   const id = uuid();
-                  const idEditOf = this.ctx.id;
+                  const idEditOf = self.ctx.id;
                   const bb = mu.bar_and_beat_number_of_ontime(
                     ontime, compObj.timeSignatures
                   );
-                  ctx = {
+                  const ctx = {
                     "object": "prodObj",
                     "property": ["reverb", "wet"],
                     "id": id,
-                    "u": { "min": this.ctx.u.min, "max": this.ctx.u.max },
-                    "v": { "min": this.ctx.v.min, "max": this.ctx.v.max }
+                    "u": { "min": self.ctx.u.min, "max": self.ctx.u.max },
+                    "v": { "min": self.ctx.v.min, "max": self.ctx.v.max }
                   };
                   prodObj.reverb.wet.push({
                     "id": id,
@@ -1928,7 +2023,7 @@ var mg = (function () {
                   prodObj.reverb.wet = prodObj.reverb.wet.sort(function(a, b){ return a.ontime - b.ontime });
                   // Transfer context.
                   // console.log("ctx:", ctx)
-                  this.ctx = ctx;
+                  self.ctx = ctx;
                 }
               }
               else {
@@ -1940,7 +2035,7 @@ var mg = (function () {
             }
           }
           // console.log("compObj:", compObj)
-          theSound.schedule_events(compObj, prodObj, theGrid);
+          theSonic.schedule_events(compObj, prodObj, theGrid);
         }
         else {
           console.log("Shouldn't get here!");
@@ -1966,7 +2061,7 @@ var mg = (function () {
 
   }
 
-  class Oblong {
+  class Oblong$1 {
     constructor(
       theSketch, theBgnImg, theMidImg, theEndImg,
       theBeingDrawn, theRowNo, theColNo, theExtraCols = 0, idNote = null,
@@ -2379,7 +2474,13 @@ var mg = (function () {
 
   }
 
-  class Dial {
+  /**
+  * The Dial class makes a circular interactive element that can be turned up or
+  * down by moving a marker round.
+  * @class Dial
+  */
+
+  class Dial$1 {
     constructor(_sketch, _id, _x, _y, _radius, _min = 0, _max = 1, _val = 0.5, _step = null){
       this.sk = _sketch;
       this.id = _id;
@@ -3116,7 +3217,21 @@ var mg = (function () {
 
   }
 
-  class Waveform {
+  /**
+  * The Waveform class makes a draggable rectangle representing the waveform of an
+  * audio file, which can be moved around the interior of a larger rectangle
+  * instantiated by the {@link Waveforms} class.
+  * @class Waveform
+  */
+
+  class Waveform$1 {
+
+    /**
+     * Constructor for making a new instance of the Waveform class.
+     * @constructor
+     * @param {Object} _sketch The p5 sketch in which one or more instances of the
+     * Waveform class will exist.
+     */
     constructor(_sketch, _url, _x, _y, _wvfs){
       this.sk = _sketch;
       this.x = _x;
@@ -3179,7 +3294,15 @@ var mg = (function () {
       image(this.graphicsBuffer, this.x, this.y);
     }
 
-
+    /**
+     * constructor description
+     * @constructor
+     * @param {Object} buff The audio buffer from which we can extract (typically)
+     * the RMS, providing a summary of amplitude values in the waveform.
+     * @return {Array} An array of pairs: the first element of each pair is the
+     * proprtion through the waveform; the second element is (typically) the RMS
+     * associated with the corresponding time window of the waveform.
+     */
     get_wav_summary(buff){
       let chData = Array.from(buff.getChannelData(0));
       // console.log(chData.length)
@@ -3420,7 +3543,7 @@ var mg = (function () {
    * Algorithms, Inc. in various applications that we have produced or are
    * developing currently.
    *
-   * @version 0.0.0
+   * @version 0.0.1
    * @author Tom Collins
    * @copyright 2021-23
    *
@@ -3432,43 +3555,43 @@ var mg = (function () {
   // } from './util_key'
 
 
-  // const Button = Button;
-  // const Buttons = Buttons;
-  // const EditButtons = EditButtons;
-  // const TransportButtons = TransportButtons;
-  // const GranularityButtons = GranularityButtons;
-  // const NavigationButtons = NavigationButtons;
-  // const EnvelopeButtons = EnvelopeButtons;
-  // const Cell = Cell;
-  // const Envelope = Envelope;
-  // const EnvelopeNode = EnvelopeNode;
-  // const Oblong = Oblong;
-  // const Help = Help;
-  // const Dial = Dial;
-  // const Grid = Grid;
-  // const PlayWheel = PlayWheel;
-  // const Waveform = Waveform;
-  // const Waveforms = Waveforms;
+  const Button$1 = Button;
+  const Buttons$2 = Buttons$1;
+  const EditButtons$1 = EditButtons;
+  const TransportButtons$1 = TransportButtons;
+  const GranularityButtons$1 = GranularityButtons;
+  const NavigationButtons$1 = NavigationButtons;
+  const EnvelopeButtons$1 = EnvelopeButtons;
+  const Cell$2 = Cell$1;
+  const Envelope$1 = Envelope;
+  const EnvelopeNode$2 = EnvelopeNode$1;
+  const Oblong$2 = Oblong$1;
+  const Help$1 = Help;
+  const Dial$2 = Dial$1;
+  const Grid$1 = Grid;
+  const PlayWheel$1 = PlayWheel;
+  const Waveform$2 = Waveform$1;
+  const Waveforms$1 = Waveforms;
 
 
   var maiaGui = {
-    Button: Button,
-    Buttons: Buttons,
-    EditButtons: EditButtons,
-    TransportButtons: TransportButtons,
-    GranularityButtons: GranularityButtons,
-    NavigationButtons: NavigationButtons,
-    EnvelopeButtons: EnvelopeButtons,
-    Cell: Cell,
-    Envelope: Envelope,
-    EnvelopeNode: EnvelopeNode,
-    Oblong: Oblong,
-    Help: Help,
-    Dial: Dial,
-    Grid: Grid,
-    PlayWheel: PlayWheel,
-    Waveform: Waveform,
-    Waveforms: Waveforms
+    Button: Button$1,
+    Buttons: Buttons$2,
+    EditButtons: EditButtons$1,
+    TransportButtons: TransportButtons$1,
+    GranularityButtons: GranularityButtons$1,
+    NavigationButtons: NavigationButtons$1,
+    EnvelopeButtons: EnvelopeButtons$1,
+    Cell: Cell$2,
+    Envelope: Envelope$1,
+    EnvelopeNode: EnvelopeNode$2,
+    Oblong: Oblong$2,
+    Help: Help$1,
+    Dial: Dial$2,
+    Grid: Grid$1,
+    PlayWheel: PlayWheel$1,
+    Waveform: Waveform$2,
+    Waveforms: Waveforms$1
 
   };
 

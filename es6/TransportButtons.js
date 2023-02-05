@@ -18,14 +18,19 @@ export default class TransportButtons extends Buttons {
       // if (prm.printConsoleLogs) { console.log("self.keys[bidx]:", self.keys[bidx]) }
       switch (self.keys[bidx]){
         case "playPause":
+        console.log("theVisual.trans:", theVisual.trans)
         if (Tone.Transport.state == "started"){
           Tone.Transport.pause()
-          self.buttonsStruct["playPause"].set_image(playImg)
+          self.buttonsStruct["playPause"].set_image(
+            theVisual.trans.img[1][1]
+          )
         }
         else {
           theSound.schedule_events(compObj, prodObj, theGrid)
           Tone.Transport.start()
-          self.buttonsStruct["playPause"].set_image(pauseImg)
+          self.buttonsStruct["playPause"].set_image(
+            theVisual.trans.img[1][0]
+          )
         }
         self.keys.forEach(function(k, idx){
           self.buttonsStruct[k].draw()
@@ -46,7 +51,9 @@ export default class TransportButtons extends Buttons {
         if (Tone.Transport.state == "started"){
           Tone.Transport.pause()
           self.buttonsStruct["playPause"].toggle_clicked()
-          self.buttonsStruct["playPause"].set_image(playImg)
+          self.buttonsStruct["playPause"].set_image(
+            theVisual.trans.img[1][1]
+          )
         }
         theVisual.draw()
         break

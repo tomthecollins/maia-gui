@@ -6,7 +6,7 @@ const instrData = {
     "tonejsDef": function(){
       const reverb = new Tone.Reverb().toDestination()
 			const panner = new Tone.Panner(-1).connect(reverb)
-      const synth = new Tone.PolySynth(Tone.Synth, {
+      return new Tone.PolySynth(Tone.Synth, {
         "envelope": {
           "attack": 0.01,
 				  "decay": 5,

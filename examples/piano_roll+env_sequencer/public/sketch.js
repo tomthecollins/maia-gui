@@ -277,7 +277,7 @@ class Interface {
     // Needs a review:
     // Not sure if this one's of any use.
     window.addEventListener("resize", function(){
-      self.visual = new Visual(self.sk, prm)
+      self.visual = new Visual(self.sk, param)
       self.draw()
       // set_component_dimensions()
       // draw_components(true)
@@ -285,7 +285,7 @@ class Interface {
 
     // Not sure if this one's of any use.
     window.addEventListener("orientationchange", function(){
-      self.visual = new Visual(self.sk, prm)
+      self.visual = new Visual(self.sk, param)
       self.draw()
       // set_component_dimensions()
       // draw_components(true)
@@ -875,6 +875,8 @@ class Sonic {
 
     // Schedule notes.
     // console.log("co.notes.length:", co.notes.length)
+    console.log("self.instr:", self.instr)
+
     co.notes.filter(function(n){ return n.stampDelete == null })
     .forEach(function(n){
       const beginTime = "0:0:" + (4*(n.ontime + 0.00)).toString()
