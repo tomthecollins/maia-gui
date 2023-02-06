@@ -1,6 +1,7 @@
 html, body {
   margin: 0;
   padding: 0;
+  color: white;
 }
 
 .Content {
@@ -14,5 +15,5 @@ html, body {
   margin: 0 15px 15px 15px;
   padding: 10px 30px 10px 30px;
   border-radius: 5px;
-  background-color: #ccfff5;
+  background-color: #074f66;
 }

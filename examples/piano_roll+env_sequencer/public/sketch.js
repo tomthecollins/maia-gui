@@ -13,7 +13,7 @@ class Client {
         "instr": "./src/instrument/"
       },
       "canvas": {
-        "width": window.innerWidth,
+        "width": window.innerWidth - 105,
         "height": 1200
       },
       // Autoplay and double-touch bug
@@ -147,7 +147,7 @@ class Client {
 
 
     }
-    let interface
+    let myInterface
     // Instrument stuff, potentially obsolete.
     let pianoImg, bassImg, drumsImg
 
@@ -198,37 +198,37 @@ class Client {
 
 
     p.setup = function(){
-      interface = new Interface(p, prm)
-      const c = interface.get_canvas()
+      myInterface = new Interface(p, prm)
+      const c = myInterface.get_canvas()
       // c.drop(got_file)
-      interface.visual.draw()
+      myInterface.visual.draw()
     }
 
 
     p.draw = function(){
-      interface.visual.cursor_draw()
+      myInterface.visual.cursor_draw()
     }
 
 
     p.mousePressed = function(){
-      if (interface.isFirefox){
+      if (myInterface.isFirefox){
         p.touchStarted()
       }
     }
 
 
     p.touchStarted = function(){
-      interface.touch_started()
+      myInterface.touch_started()
     }
 
 
     p.touchMoved = function(){
-      interface.touch_moved()
+      myInterface.touch_moved()
     }
 
 
     p.touchEnded = function(){
-      interface.touch_ended()
+      myInterface.touch_ended()
     }
   }
 }

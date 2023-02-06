@@ -16,7 +16,8 @@ Thumbs.db
 # examples/
 
 # src files
-src/
+# src/
+img+prep/
 
 # Audio/music files
 *.wav
@@ -27,7 +28,7 @@ src/
 *.midi
 
 # Image files
-*.png
+# *.png
 *.jpg
 *.jpeg
 

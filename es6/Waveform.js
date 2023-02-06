@@ -12,12 +12,12 @@ class Waveform {
    * @param {Object} _sketch The p5 sketch in which one or more instances of the
    * Waveform class will exist.
    */
-  constructor(_sketch, _url, _x, _y, _rectH, _secPerBox, _wvfs){
+  constructor(_sketch, _url, _x, _y, _wvfs){
     this.sk = _sketch
     this.x = _x
     this.y = _y
-    this.rectH = _rectH
-    this.secPerBox = _secPerBox
+    this.rectH = _wvfs.wfHeight
+    this.secPerBox = _wvfs.secPerBox
     this.wvfs = _wvfs
     this.dragOffset = {}
     this.moving = false

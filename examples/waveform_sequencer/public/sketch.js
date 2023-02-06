@@ -72,24 +72,25 @@ class Interface {
     this.sk = _sketch
     // this.param = param
     this.sk.createCanvas(param.canvasWidth, param.canvasHeight)
-    new mg.TextInput(
-      this.sk, "Add URL to another sound here.", 30, 30, 490,
-      "Add file!", 530, 30
-    )
 
     this.wavfs = new mg.Waveforms(
       this.sk, 30, 70, 540, 220, param.screenLRepresents,
-      param.screenWRepresents
+      param.screenWRepresents, param.wavfHeight, param.boxDuration
     )
     this.wavfs.add_waveform(
       "https://tomcollinsresearch.net/mc/ex/src/instrument/edm_samples/drum_3.wav",
-      129.5, 110, param.wavfHeight, param.boxDuration
+      129.5, 110
     )
     this.wavfs.add_waveform(
       "https://tomcollinsresearch.net/mc/ex/src/instrument/edm_samples/bass.wav",
-      30, 200, param.wavfHeight, param.boxDuration
+      30, 200
     )
     this.wavfs.draw()
+
+    new mg.TextInput(
+      this.sk, this.wavfs, "mySequencer", "Add URL to another sound here.",
+      45, 30, 490, "Add file!", 545, 30
+    )
   }
 }
 

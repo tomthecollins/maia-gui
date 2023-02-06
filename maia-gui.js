@@ -3472,12 +3472,12 @@ var mg = (function () {
      * @param {Object} _sketch The p5 sketch in which one or more instances of the
      * Waveform class will exist.
      */
-    constructor(_sketch, _url, _x, _y, _rectH, _secPerBox, _wvfs){
+    constructor(_sketch, _url, _x, _y, _wvfs){
       this.sk = _sketch;
       this.x = _x;
       this.y = _y;
-      this.rectH = _rectH;
-      this.secPerBox = _secPerBox;
+      this.rectH = _wvfs.wfHeight;
+      this.secPerBox = _wvfs.secPerBox;
       this.wvfs = _wvfs;
       this.dragOffset = {};
       this.moving = false;
@@ -3687,7 +3687,7 @@ var mg = (function () {
   }
 
   class Waveforms {
-    constructor(_sketch, _x, _y, _w, _h, _xInSec, _wInSec){
+    constructor(_sketch, _x, _y, _w, _h, _xInSec, _wInSec, _wfHeight, _secPerBox){
       this.sk = _sketch;
       this.x = _x;
       this.y = _y;
@@ -3695,15 +3695,17 @@ var mg = (function () {
       this.h = _h;
       this.xInSec = _xInSec;
       this.wInSec = _wInSec;
+      this.wfHeight = _wfHeight;
+      this.secPerBox = _secPerBox;
 
       this.arr = [];
       this.movingIdx = -1;
     }
 
 
-    add_waveform(_url, _x, _y, _rectH, _secPerBox){
+    add_waveform(_url, _x, _y){
       this.arr.push(
-        new Waveform(this.sk, _url, _x, _y, _rectH, _secPerBox, this)
+        new Waveform(this.sk, _url, _x, _y, this)
       );
     }
 
@@ -3725,6 +3727,7 @@ var mg = (function () {
       self.sk.rect(self.x, self.y, self.w, self.h);
       self.sk.drawingContext.clip();
       self.arr.forEach(function(wf){
+        // console.log("idx:", idx, wf)
         if (wf.graphicsBuffer){
           wf.draw();
         }
@@ -3788,22 +3791,28 @@ var mg = (function () {
 
   class TextInput {
     constructor(
-      _sketch, _inputPlaceholder, _inputX, _inputY, _inputW, _btnText, _btnX, _btnY
+      _sketch, _wavfs, _idDiv, _inputPlaceholder, _inputX, _inputY, _inputW, _btnText, _btnX, _btnY
     ){
       // this.sk = _sketch,
       this.input = _sketch.createInput(_inputPlaceholder);
-      this.input.position(_inputX, _inputY);
+      // Calculate the (x, y)-offsets of the text input and button on the page.
+      const bcr = document.querySelector("#" + _idDiv).getBoundingClientRect();
+      const inputX = window.scrollX + bcr.left + _inputX;
+      const inputY = window.scrollY + bcr.top + _inputY;
+      const btnX = window.scrollX + bcr.left + _btnX;
+      const btnY = window.scrollY + bcr.top + _btnY;
+      this.input.position(inputX, inputY);
       this.input.size(_inputW);
       this.subBtn = _sketch.createButton(_btnText);
-      this.subBtn.position(_btnX, _btnY);
+      this.subBtn.position(btnX, btnY);
       this.subBtn.mousePressed(this.mouse_pressed.bind(this));
+      this.wavfs = _wavfs;
     }
 
 
-    mouse_pressed(wavfs){
+    mouse_pressed(){
       try {
-        // console.log("this:", this)
-        wavfs.add_waveform(this.input.elt.value, 30, 100, rectH, secPerBox, wavfs);
+        this.wavfs.add_waveform(this.input.elt.value, 30, 100);
       }
       catch (error){
         console.error(error);
@@ -3817,6 +3826,14 @@ var mg = (function () {
    * MAIA GUI is a JavaScript package used by Music Artificial Intelligence
    * Algorithms, Inc. in various applications that we have produced or are
    * developing currently.
+   *
+   * The examples folder contains working examples, such as waveform sequencer (relatively simple) and piano_roll+env_sequencer (more complex). For each example, the most important file to study to see how to build interfaces with MAIA GUI is public -> sketch.js.
+   *
+   * To run these examples locally,
+   *
+   * 1. You will need [Node.js](https://nodejs.org/en/) installed.
+   * 2. In Terminal or GitBASH, navigate to the directory containing the example (if you run the `ls` command, one of the files should be server.js)
+   * 3. Execute `node server.js` from the command line, then point your browser at http://127.0.0.1:3000/
    *
    * @version 0.0.1
    * @author Tom Collins

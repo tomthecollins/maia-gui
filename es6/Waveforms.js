@@ -1,5 +1,5 @@
 export default class Waveforms {
-  constructor(_sketch, _x, _y, _w, _h, _xInSec, _wInSec){
+  constructor(_sketch, _x, _y, _w, _h, _xInSec, _wInSec, _wfHeight, _secPerBox){
     this.sk = _sketch
     this.x = _x
     this.y = _y
@@ -7,15 +7,17 @@ export default class Waveforms {
     this.h = _h
     this.xInSec = _xInSec
     this.wInSec = _wInSec
+    this.wfHeight = _wfHeight
+    this.secPerBox = _secPerBox
 
     this.arr = []
     this.movingIdx = -1
   }
 
 
-  add_waveform(_url, _x, _y, _rectH, _secPerBox){
+  add_waveform(_url, _x, _y){
     this.arr.push(
-      new Waveform(this.sk, _url, _x, _y, _rectH, _secPerBox, this)
+      new Waveform(this.sk, _url, _x, _y, this)
     )
   }
 
@@ -37,6 +39,7 @@ export default class Waveforms {
     self.sk.rect(self.x, self.y, self.w, self.h)
     self.sk.drawingContext.clip()
     self.arr.forEach(function(wf){
+      // console.log("idx:", idx, wf)
       if (wf.graphicsBuffer){
         wf.draw()
       }

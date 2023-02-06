@@ -5,6 +5,14 @@
  * Algorithms, Inc. in various applications that we have produced or are
  * developing currently.
  *
+ * The examples folder contains working examples, such as waveform sequencer (relatively simple) and piano_roll+env_sequencer (more complex). For each example, the most important file to study to see how to build interfaces with MAIA GUI is public -> sketch.js.
+ *
+ * To run these examples locally,
+ *
+ * 1. You will need [Node.js](https://nodejs.org/en/) installed.
+ * 2. In Terminal or GitBASH, navigate to the directory containing the example (if you run the `ls` command, one of the files should be server.js)
+ * 3. Execute `node server.js` from the command line, then point your browser at http://127.0.0.1:3000/
+ *
  * @version 0.0.1
  * @author Tom Collins
  * @copyright 2021-23
