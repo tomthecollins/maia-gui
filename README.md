@@ -9,7 +9,8 @@ To run these examples locally,
 
 1. You will need [Node.js](https://nodejs.org/en/) installed.
 2. In Terminal or GitBASH, navigate to the directory containing the example (if you run the `ls` command, one of the files should be server.js)
-3. Execute `node server.js` from the command line, then point your browser at http://127.0.0.1:3000/
+3. Execute `npm install` to obtain the dependencies for your example of choice. (The dependencies are minimal -- just fastify and fastify-static to serve the page and associated resources.)
+4. Execute `node server.js` from the command line, then point your browser at http://127.0.0.1:3000/
 
 
 ### Developer
