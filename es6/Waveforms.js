@@ -1,4 +1,22 @@
-export default class Waveforms {
+/**
+ * Class for representing a set of waveforms
+ * @class
+ */
+class Waveforms {
+
+  /**
+   * Constructor for the Waveforms class
+   * @constructor
+   * @param {Object} _sketch - the p5.js sketch object
+   * @param {number} _x - the x-coordinate of the Waveforms object
+   * @param {number} _y - the y-coordinate of the Waveforms object
+   * @param {number} _w - the width of the Waveforms object
+   * @param {number} _h - the height of the Waveforms object
+   * @param {number} _xInSec - the x-coordinate of the Waveforms object, in seconds
+   * @param {number} _wInSec - the width of the Waveforms object, in seconds
+   * @param {number} _wfHeight - the height of each individual waveform in the set
+   * @param {number} _secPerBox - the number of seconds per grid box in the Waveforms object
+   */
   constructor(_sketch, _x, _y, _w, _h, _xInSec, _wInSec, _wfHeight, _secPerBox){
     this.sk = _sketch
     this.x = _x
@@ -14,14 +32,21 @@ export default class Waveforms {
     this.movingIdx = -1
   }
 
-
+  /**
+   * Adds a waveform to the array of waveforms.
+   * @param {string} _url - URL of the waveform audio file
+   * @param {number} _x - x-coordinate of the waveform
+   * @param {number} _y - y-coordinate of the waveform
+   */
   add_waveform(_url, _x, _y){
     this.arr.push(
       new Waveform(this.sk, _url, _x, _y, this)
     )
   }
 
-
+  /**
+   * Draws the waveforms.
+   */
   draw(){
     const self = this
     self.sk.background(220)
@@ -65,14 +90,18 @@ export default class Waveforms {
     }
   }
 
-
+  /**
+   * Moves one of the waveforms.
+   */
   move(){
     if (this.movingIdx >= 0){
       this.arr[this.movingIdx].move()
     }
   }
 
-
+  /**
+   * Starts the playback of the waveforms.
+   */
   playback(){
     const self = this
     Tone.Transport.scheduleRepeat(function(){
@@ -84,7 +113,9 @@ export default class Waveforms {
     Tone.Transport.start()
   }
 
-
+  /**
+   * Checks and stores which waveform is being touched.
+   */
   touch_check(){
     this.movingIdx = this.arr.findIndex(function(wf){
       return wf.touch_check()
@@ -92,7 +123,11 @@ export default class Waveforms {
     return this.movingIdx
   }
 
-
+  /**
+   * Calls `touch_end()` for an indiviual waveform that was being touched, and
+   * resets the class' `movingIdx` property to -1 (indicating that no waveform
+   * is being touched).
+   */
   touch_end(){
     if (this.movingIdx >= 0){
       this.arr[this.movingIdx].touch_end(this.x, this.w)
@@ -100,3 +135,4 @@ export default class Waveforms {
     }
   }
 }
+export default Waveforms
