@@ -14,6 +14,11 @@
  * 3. Execute `npm install` to obtain the dependencies for your example of choice. (The dependencies are minimal -- just fastify and fastify-static to serve the page and associated resources.)
  * 4. Execute `node server.js` from the command line, then point your browser at http://127.0.0.1:3000/
  *
+ * For the example piano_roll_plot, the provided MIDI file (public -> src -> midi -> 802.mid) must be converted into a Composition object **before** running server.js. The conversion script midi2comp_obj.js can be executed as follows:
+ *  ```
+ *  node midi2comp_obj.js -u default
+ *  ```
+ *
  * @version 0.0.1
  * @author Tom Collins
  * @copyright 2021-23

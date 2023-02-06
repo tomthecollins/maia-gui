@@ -13,10 +13,8 @@ docs/
 Thumbs.db
 
 # Examples
-# examples/
 
 # src files
-# src/
 img+prep/
 
 # Audio/music files
@@ -26,6 +24,8 @@ img+prep/
 *.m4a
 *.mid
 *.midi
+examples/piano_roll_plot/public/src/composition/802.js
+!examples/piano_roll_plot/public/src/midi/802.mid
 
 # Image files
 # *.png

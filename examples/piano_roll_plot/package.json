@@ -1,0 +1,25 @@
+{
+  "name": "maia-gui-examples",
+  "version": "0.0.1",
+  "description": "An interface where audio files can be uploaded and sequenced",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "fastify": "^3.27.0",
+    "fastify-static": "^4.5.0",
+    "maia-markov": "^0.0.62"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": ""
+  },
+  "license": null,
+  "keywords": [
+    "node",
+    "glitch"
+  ]
+}
